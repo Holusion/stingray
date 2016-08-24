@@ -1,0 +1,5 @@
+#!/bin/sh
+set -e
+#empty file to trigger debuild utilities
+
+#DEBHELPER#

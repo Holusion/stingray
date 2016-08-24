@@ -1,0 +1,19 @@
+
+Source: vswitch
+Section: video
+Priority: extra
+Maintainer: Sebastien Dumetz <s.dumetz@holusion.com>
+Standards-Version: 3.9
+Build-Depends: debhelper (>=9)
+
+Package: vswitch
+Architecture: amd64
+Depends: libgl1-mesa-dri, libgl1-mesa-glx, ${shlibs:Depends}, ${misc:Depends}
+Description: Video switch player
+ Can seamlessly play videos forward and backward.
+ Provides acceleration features,
+ able to fast-forward with maximum fluidity,
+ allowing users to precisely control playback speed.
+ It's made to provide a better 360° rotation alternative
+ with a high quality rendering and fluid user control.
+ (compared to existing web-based technologies)
