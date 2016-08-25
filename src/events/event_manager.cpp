@@ -32,10 +32,10 @@ void EventManager::loadModules(){
   if(lt_dlinit () != 0)
     std::cerr<<"LT_ERROR lt_dltinit : "<<lt_dlerror()<<std::endl;
   /* Set the module search path. */
-  if (lt_dlsetsearchpath ("/etc/vswitch/modules.d") != 0) ///home/sebastien/repositories/switch/src/events
+  if (lt_dlsetsearchpath ("/etc/stingray/modules.d") != 0) ///home/sebastien/repositories/switch/src/events
     std::cerr<<"LT_ERROR lt_dlsetsearchpath : "<<lt_dlerror()<<std::endl;
   else{
-    d = opendir("/etc/vswitch/modules.d");
+    d = opendir("/etc/stingray/modules.d");
     if (d){
       while ((dir = readdir(d)) != NULL){
         if( strstr(dir->d_name,".so")== dir->d_name+strlen(dir->d_name)-3

@@ -22,7 +22,7 @@ Makefile
 vendor/libltdl
 
 
-debian/vswitch
+debian/stingray
 debian/*.substvars
 debian/files
 

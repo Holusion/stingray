@@ -1,12 +1,12 @@
 
-Source: vswitch
+Source: stingray
 Section: video
 Priority: extra
 Maintainer: Sebastien Dumetz <s.dumetz@holusion.com>
 Standards-Version: 3.9
 Build-Depends: debhelper (>=9)
 
-Package: vswitch
+Package: stingray
 Architecture: amd64
 Depends: libgl1-mesa-dri, libgl1-mesa-glx, ${shlibs:Depends}, ${misc:Depends}
 Description: Video switch player

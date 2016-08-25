@@ -1,7 +1,7 @@
 Format: http://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
-Upstream-Name: Vswitch
+Upstream-Name: stingray
 Upstream-Contact: Sebastien Dumetz <s.dumetz@holusion.com>
-Source: https://github.com/holusion/vswitch
+Source: https://github.com/holusion/stingray
 
 Files: *
 Copyright: 2016, Sebastien Dumetz

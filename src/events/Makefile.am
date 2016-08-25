@@ -1,4 +1,4 @@
-# sample Makefile to compile a stub libary to be used with vswitch
+# sample Makefile to compile a stub libary to be used with stingray
 pkglib_LTLIBRARIES = joystick_inputs.la
 
 joystick_inputs_la_CPPFLAGS = -I$(top_srcdir)/vendor/libltdl $(INCLTDL)

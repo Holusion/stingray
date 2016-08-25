@@ -1,1 +1,1 @@
-man_MANS = vswitch.1
+man_MANS = stingray.1
