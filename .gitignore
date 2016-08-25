@@ -15,6 +15,7 @@ voutput.mov
 Makefile
 .dirstamp
 /stingray
+/stingray-*
 /test_stingray
 
 
