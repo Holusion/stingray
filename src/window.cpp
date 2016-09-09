@@ -14,8 +14,16 @@ Window::Window() {
   SDL_GL_SetAttribute( SDL_GL_CONTEXT_MAJOR_VERSION, 3);
   SDL_GL_SetAttribute( SDL_GL_CONTEXT_MINOR_VERSION, 1 );
   SDL_DisplayMode  mode;
-  SDL_GetDesktopDisplayMode(0, &mode);
-
+  int display_count = 0, display_index = 0, mode_index = 0;
+  if ((display_count = SDL_GetNumVideoDisplays()) < 1) {
+    throw SDLException("SDL_GetNumVideoDisplays");
+  }else if (SDL_GetDisplayMode(display_index, mode_index, &mode) != 0) {
+    throw SDLException("SDL_GetDisplayMode failed");
+  }
+  SDL_Log("SDL_GetDisplayMode(0, 0, &mode):\t\t%i bpp\t%i x %i",SDL_BITSPERPIXEL(mode.format), mode.w, mode.h);
+  //GetDesktopDisplayMode is relying on RandR extension, disabled by Xinerama
+  //SDL_GetDesktopDisplayMode(0, &mode);
+  std::cout<<"Detected desktop resolution : "<<mode.w<<"x"<<mode.h<<std::endl;
   /*! Create Window */
   m_window = SDL_CreateWindow(
       "Holusion Video Player",
