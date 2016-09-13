@@ -42,5 +42,9 @@ class  EventManager {
     void openModule(char* filename);
     void unloadModules();
     #endif
+    #ifdef ENABLE_AUTOEXIT
+    int autoexit_count = 0;
+    int lastAxis=0;
+    #endif
 };
 #endif

@@ -112,6 +112,17 @@ void  EventManager::update(entities::Video& video) {
   if(axis == 0){
     axis = events.getAxis(); //keyboard is ignored if any other input is active.
   }
+  #ifdef ENABLE_AUTOEXIT
+  if (axis == lastAxis){
+    autoexit_count++;
+    if (autoexit_count > 300){ //update is called on each frame (~60fps)
+      quit = true;
+    }
+  }else if (autoexit_count != 0){
+    autoexit_count = 0;
+  }
+  lastAxis = axis;
+  #endif
   // Check Pause
   video.pause = (axis == 0) ? true : false;
 

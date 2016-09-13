@@ -74,6 +74,14 @@ AS_IF([test "x$enable_mouse" == "xyes"], [
   AC_DEFINE(ENABLE_MOUSE,[1],[Enable mouse control])
 ])
 
+# autoexit (Default Disabled)
+#Exit stingray after some seconds of inactivity
+AC_ARG_ENABLE([autoexit],
+    AS_HELP_STRING([--enable-autoexit], [Enable autoexit feature]))
+
+AS_IF([test "x$enable_autoexit" == "xyes"], [
+  AC_DEFINE(ENABLE_AUTOEXIT,[1],[Enable autoexit feature])
+])
 
 AC_CONFIG_FILES([ Makefile
                   doc/Makefile
