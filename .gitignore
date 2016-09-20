@@ -17,7 +17,7 @@ Makefile
 /stingray
 /stingray-*
 /test_stingray
-
+/benchmark
 
 
 vendor/libltdl

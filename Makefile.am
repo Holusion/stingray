@@ -4,6 +4,7 @@ SUBDIRS = doc vendor src test
 ACLOCAl_AMFLAGS = -I vendor/libltdl/m4 -I m4
 ### Binaries ###
 bin_PROGRAMS = stingray
+noinst_PROGRAMS = benchmark
 check_PROGRAMS = test_stingray
 
 TESTS = $(check_PROGRAMS)
@@ -58,3 +59,12 @@ test_stingray_SOURCES = test/test_main.cpp test/test_frametimer.cpp test/test_vi
 noinst_HEADERS += test/test_frametimer.hpp \
   test/test_video_decoder.hpp \
   test/test_helpers/frames_compare.hpp
+
+### benchmark decoder ###
+benchmark_SOURCES = test/benchmark_decodeSpeed.cpp \
+  src/frametimer.cpp src/video_buffer.cpp src/video_decoder.cpp src/decoder_context.cpp src/video.cpp
+
+benchmark_CPPFLAGS = -Wall -Wextra -I$(top_srcdir)/vendor -I$(top_srcdir)/src \
+                  $(avcodec_CFLAGS) $(avformat_CFLAGS) $(avutil_CFLAGS)
+
+benchmark_LDFLAGS	= -lpthread $(avcodec_LIBS) $(avformat_LIBS) $(avutil_LIBS) -export-dynamic
