@@ -109,6 +109,9 @@ void  EventManager::update(entities::Video& video) {
   if (events.getQuit() != 0){
     quit = true;
   }
+  if(quit){
+    std::cout<<"Exit requested from input"<<std::endl;
+  }
   if(axis == 0){
     axis = events.getAxis(); //keyboard is ignored if any other input is active.
   }
@@ -116,6 +119,7 @@ void  EventManager::update(entities::Video& video) {
   if (axis == lastAxis){
     autoexit_count++;
     if (autoexit_count > 300){ //update is called on each frame (~60fps)
+      std::cout<<"Automatic exit (Inactive)"<<std::endl;
       quit = true;
     }
   }else if (autoexit_count != 0){
