@@ -31,14 +31,15 @@ DecoderContext::DecoderContext(const char* file,int width,int height) {
       break;
     }
   if(this->codecCtx == nullptr)
-    throw; // Didn't find a video stream
+    throw AVException(0,"No stream found from avformat_find_stream_info"); //! Couldn't find or Didn't find a video stream
   //! Find the decoder for the video stream
   AVCodec*  codec = avcodec_find_decoder(this->codecCtx->codec_id);
   if(codec == nullptr)
-    throw; // Codec not found
+    throw AVException(0,"avcodec_find_decoder : codec not found for stream"); // Codec not found
   //! Copy context
+  std::cout<<"Codec:"<<codec->name<<std::endl;
   if ((this->codecCtxOrig = avcodec_alloc_context3(codec)) == nullptr)
-    throw;
+    throw AVException(0,"avcodec_alloc_context3 Failed");
   ret = avcodec_copy_context(this->codecCtxOrig, this->codecCtx);
   if(ret !=0){
     throw AVException(ret,"avcodec_copy_context"); //! Error copying codec context
