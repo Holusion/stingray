@@ -1,4 +1,10 @@
-stingray (0.1.0) UNRELEASED; urgency=medium
+stingray (0.1.1) UNRELEASED; urgency=medium
+
+  * fix some issues following real world tests
+
+ -- Sebastien Dumetz <s.dumetz@holusion.com>  Wed, 05 Oct 2016 10:52:47 +0200
+
+stingray (0.1.0) testing; urgency=medium
 
   * Initial release. 
 
