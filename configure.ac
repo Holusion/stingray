@@ -30,8 +30,8 @@ AC_LANG(C++)
 
 # Checks for modules
 PKG_CHECK_MODULES(SDL2, sdl2)
-PKG_CHECK_MODULES(avcodec, libavcodec >= 56.1.0)
-PKG_CHECK_MODULES(avformat, libavformat >= 56.1.0)
+PKG_CHECK_MODULES(avcodec, libavcodec >= 54.3.0)
+PKG_CHECK_MODULES(avformat, libavformat >= 54.3.0)
 PKG_CHECK_MODULES(avutil, libavutil >= 54.3.0)
 
 
