@@ -58,7 +58,9 @@ void  VideoDecoder::decode(unsigned int current) {
   //! Seek if we are not on the right frame
   if (m_context.nextFrame != current)
     seek(current);
-
+  if ( 10 < m_context.nextFrame){
+    seek(0);
+  }
   //! Fill decodeArray with VideoFrame
   for (unsigned int i = 0; i < DECODE_SIZE; ++i) {
 
