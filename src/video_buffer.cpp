@@ -13,23 +13,21 @@ void  VideoBuffer::pop_to_back() {
 }
 void VideoBuffer::switchDirection() {
 
-  //! Lock Mutex
-  m_lock.lock();
+  //! Lock Mutex RAII style
+  std::lock_guard<std::mutex> lock(m_lock);
 
   Base::swap();
   m_direction = (m_direction == E_Direction::NORMAL) ? E_Direction::REVERSE : E_Direction::NORMAL;
   m_fullClean = true;
 
-  //! Unlock Mutex
-  m_lock.unlock();
 }
 
 int  VideoBuffer::write(std::array<VideoFrame*, DECODE_SIZE>& data, E_Direction direction) {
 
     int  add = DECODE_SIZE;
 
-    //! Lock Mutex
-    m_lock.lock();
+    //! Lock Mutex RAII style
+    std::lock_guard<std::mutex> lock(m_lock);
 
     std::deque<VideoFrame*>&  queue = (direction == m_direction) ? Base::m_data : Base::m_backData;
 
@@ -63,15 +61,14 @@ int  VideoBuffer::write(std::array<VideoFrame*, DECODE_SIZE>& data, E_Direction 
       m_fullClean = false;
     }
 
-    //! Unlock Mutex
-    m_lock.unlock();
     return add;
 }
 
 VideoFrame*  VideoBuffer::read() {
 
-  //! Lock Mutex
-  m_lock.lock();
+  //! Lock Mutex RAII style
+  std::lock_guard<std::mutex> lock(m_lock);
+  // We need to lock for read since we do'nt have a lock dedicated to direction change
 
  if (Base::m_data.size() <= 0)
     return nullptr;
@@ -90,8 +87,6 @@ VideoFrame*  VideoBuffer::read() {
 
   VideoFrame* ret = Base::m_backData.front();
 
-  //! Unlock Mutex
-  m_lock.unlock();
 
   return ret;
 }
