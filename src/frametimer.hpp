@@ -1,6 +1,7 @@
 #ifndef FRAMETIMER_HPP
 #define FRAMETIMER_HPP
 #include <inttypes.h>
+#define MAXFPS 60
 class FrameTimer{
     public:
         //Initializes variables

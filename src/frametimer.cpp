@@ -21,11 +21,11 @@ int FrameTimer::getWaitingTime(uint32_t ticks){
   if(targetSpeed != 0){
     waitTimer = 1000*(getSkipCount()+1)/targetSpeed - mean;
   }else{ //default to 30 fps
-    waitTimer = 1000*(getSkipCount()+1)/30 - mean;
+    waitTimer = 1000*(getSkipCount()+1)/MAXFPS - mean;
   }
   last += waitTimer;
   return (waitTimer>=0)?waitTimer:0;
 }
 int FrameTimer::getSkipCount(){
-  return (targetSpeed>30)?targetSpeed/30-1:0; //30 is the reference framerate here
+  return (targetSpeed>MAXFPS)?targetSpeed/MAXFPS-1:0; //30 is the reference framerate here
 }
