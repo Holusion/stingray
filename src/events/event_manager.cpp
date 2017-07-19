@@ -42,7 +42,7 @@ void EventManager::loadModules(){
           || strstr(dir->d_name,".la")== dir->d_name+strlen(dir->d_name)-3 ){
           openModule(dir->d_name);
         }else{
-          std::cout<<"discarded "<<s<<" for modules"<<std::endl;
+          std::cout<<"discarded "<<dir->d_name<<" for modules"<<std::endl;
         }
       }
       closedir(d);

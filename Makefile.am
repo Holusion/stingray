@@ -40,7 +40,7 @@ noinst_HEADERS =   src/constants.h \
   src/events/SDLEvents.hpp \
   src/events/event_manager.hpp \
   src/events/eventListener.hpp \
-  src/dbuffer.hpp \
+  src/debuffer.hpp \
   src/video_frame.hpp \
   src/frametimer.hpp src/video.hpp src/video_buffer.hpp src/video_decoder.hpp src/decoder_context.hpp src/window.hpp
 
