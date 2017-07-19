@@ -5,7 +5,7 @@ using namespace entities;
 Video::Video(const char* file,int width,int height) : context(file, width, height),
                                  pause(false),
                                  speed(this->context.fps),
-                                 buffer(new entities::VideoBuffer(context.nbFrames)) {
+                                 buffer(new DeBuffer<VideoFrame*>(context.nbFrames)) {
 }
 
 Video::~Video(){

@@ -86,7 +86,7 @@ void  Window::draw(entities::Video& video) {
       DEBUG_LOG("Buffer too slow at "<<video.speed<<"fps"<<std::endl);
       break; //don't empty the buffer...
     }
-    video.buffer->read();
+    video.buffer->forward();
   }
   waitingTime = timer.getWaitingTime(SDL_GetTicks());
   if(waitingTime == 0){
@@ -96,7 +96,7 @@ void  Window::draw(entities::Video& video) {
   }
 
   if ((video.buffer->size() > 0 && !video.pause)) {
-    frame = video.buffer->read()->frame();
+    frame = video.buffer->forward()->frame();
     lastFrame = frame;
   }else{
     frame = lastFrame;

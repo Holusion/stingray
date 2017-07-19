@@ -7,12 +7,10 @@
 
 #include  <array>
 #include  <cstddef>
-#include  "video_frame.hpp"
 #include  "exceptions/av_exception.hpp"
 #include  <algorithm>
 #include  "video.hpp"
 #include  "constants.h"
-
 //! @namespace  decoder
 //! @brief  Decoder Video namespace
 namespace  decoder {
@@ -44,7 +42,7 @@ namespace  decoder {
       void        nextFrame(AVFrame* frame); //!< Can Throw AVException
 
       //! @brief Check where we need to decode from
-      int         getDecodeIndex(entities::VideoBuffer& buffer);
+      int         getDecodeIndex(DeBuffer<entities::VideoFrame*>& buffer);
 
 
 #ifdef  TESTS      //! @brief Some Google Tests
@@ -62,7 +60,7 @@ namespace  decoder {
       void  decode(unsigned int next);
 
       //! @brief Decode and write one array into the buffer
-      void  decodeAndWrite(entities::VideoBuffer& buffer);
+      void  decodeAndWrite(DeBuffer<entities::VideoFrame*>& buffer);
   };
 }
 #endif

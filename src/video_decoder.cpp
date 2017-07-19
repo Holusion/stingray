@@ -2,7 +2,6 @@
 
 using namespace  decoder;
 
-
 VideoDecoder::VideoDecoder(DecoderContext& context): m_context(context) {
   tmpframe = av_frame_alloc();
   for (unsigned int i = 0; i < DECODE_SIZE; ++i)
@@ -22,10 +21,10 @@ void  VideoDecoder::updateVideoBuffer(std::size_t  writes) {
   }
 }
 
-int VideoDecoder::getDecodeIndex(entities::VideoBuffer& buffer){
+int VideoDecoder::getDecodeIndex(DeBuffer<entities::VideoFrame*>& buffer){
   int          decodeFrom;
 
-  if (buffer.direction() == E_Direction::NORMAL){
+  if (buffer.direction() == Direction::NORMAL){
     decodeFrom = buffer.index() + buffer.size();
   }else{
     decodeFrom = buffer.index() - buffer.size() - DECODE_SIZE;
@@ -41,16 +40,21 @@ int VideoDecoder::getDecodeIndex(entities::VideoBuffer& buffer){
   return decodeFrom;
 }
 
-void  VideoDecoder::decodeAndWrite(entities::VideoBuffer& buffer) {
-  E_Direction  direction = buffer.direction();
+void  VideoDecoder::decodeAndWrite(DeBuffer<entities::VideoFrame*> & buffer) {
+  Direction  direction = buffer.direction();
 
   //! Decode
   decode(getDecodeIndex(buffer));
-  if (direction == E_Direction::REVERSE){
+  if (direction == Direction::REVERSE){
     std::reverse(m_decodeArray.begin(), m_decodeArray.end());
   }
   //! Update decodeArray
-  updateVideoBuffer(buffer.write(m_decodeArray, direction));
+  for (int i=0; i <  m_decodeArray.size(); i++){
+    if (!buffer.write(m_decodeArray[i], direction)){
+      std::cout<<"Out of capacity"<<std::endl;
+    }
+  }
+
 }
 
 void  VideoDecoder::decode(unsigned int current) {

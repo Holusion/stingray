@@ -26,7 +26,6 @@ stingray_SOURCES= src/launcher.cpp \
   src/events/event_manager.cpp \
   src/frametimer.cpp \
   src/video.cpp \
-  src/video_buffer.cpp \
   src/video_decoder.cpp \
   src/decoder_context.cpp \
   src/window.cpp
@@ -52,11 +51,12 @@ test_stingray_LDFLAGS = $(avcodec_LIBS) $(avformat_LIBS) $(avutil_LIBS)
 test_stingray_LDADD =  $(top_srcdir)/vendor/gtest/libgtest.a
 
 ### Check Program sources files ###
-test_stingray_SOURCES = test/test_main.cpp test/test_frametimer.cpp test/test_video_decoder.cpp \
-  src/frametimer.cpp src/video_buffer.cpp src/video_decoder.cpp src/decoder_context.cpp
+test_stingray_SOURCES = test/test_main.cpp test/test_frametimer.cpp test/test_video_decoder.cpp test/test_debuffer.cpp \
+  src/frametimer.cpp src/video_buffer.cpp src/video_decoder.cpp  src/decoder_context.cpp
 
 ### Check Program sources files ###
 noinst_HEADERS += test/test_frametimer.hpp \
+  test/test_debuffer.hpp \
   test/test_video_decoder.hpp \
   test/test_helpers/frames_compare.hpp
 

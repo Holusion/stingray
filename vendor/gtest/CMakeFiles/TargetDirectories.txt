@@ -1,0 +1,4 @@
+/home/sebastien/repositories/stingray/vendor/gtest/CMakeFiles/rebuild_cache.dir
+/home/sebastien/repositories/stingray/vendor/gtest/CMakeFiles/edit_cache.dir
+/home/sebastien/repositories/stingray/vendor/gtest/CMakeFiles/gtest_main.dir
+/home/sebastien/repositories/stingray/vendor/gtest/CMakeFiles/gtest.dir

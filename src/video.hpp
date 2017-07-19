@@ -1,7 +1,8 @@
 #ifndef  VIDEO_HPP
 #define  VIDEO_HPP
 
-#include  "video_buffer.hpp"
+#include  "debuffer.hpp"
+#include "video_frame.hpp"
 #include "decoder_context.hpp"
 
 //! @namespace entities
@@ -16,7 +17,7 @@ namespace  entities {
       decoder::DecoderContext  context;
       bool                     pause;
       int16_t                  speed;
-      VideoBuffer*             buffer;
+      DeBuffer<VideoFrame*>*   buffer;
 
     public:
       Video(const char* file,int width,int height); //!< Can throw AVException

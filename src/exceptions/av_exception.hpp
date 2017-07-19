@@ -9,8 +9,9 @@
 #include  <exception>
 #include  <iostream>
 #include  <string>
-#include  <libavutil/error.h>
-
+extern "C" {
+  #include  <libavutil/error.h>
+}
 //! @class AVException
 //! @brief Libav/Ffmpeg exception
 class  AVException : public std::exception{
@@ -18,13 +19,13 @@ class  AVException : public std::exception{
   private:
     char         m_log[100];
     std::string  log;
-  
+
   public:
     AVException (int errnum,
                  std::string additional_infos="") {
 
       char errstr[100];
-      
+
       if(additional_infos.size() > 0){
         additional_infos.insert(0,"in : ");
         additional_infos.append(", ");

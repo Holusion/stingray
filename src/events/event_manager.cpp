@@ -130,10 +130,10 @@ void  EventManager::update(entities::Video& video) {
   // Check Pause
   video.pause = (axis == 0) ? true : false;
 
-  if ( (axis < 0  && video.buffer->direction() == E_Direction::NORMAL)
-    || (0 < axis  && video.buffer->direction() == E_Direction::REVERSE))
+  if ( (axis < 0  && video.buffer->direction() == Direction::NORMAL)
+    || (0 < axis  && video.buffer->direction() == Direction::REVERSE))
   {
-    video.buffer->switchDirection();
+    video.buffer->swap();
   }
   video.speed = video.context.fps *((float)std::abs(axis))* 0.25;
 }

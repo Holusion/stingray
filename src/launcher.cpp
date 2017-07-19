@@ -11,7 +11,7 @@
 #include  <thread>
 #include  <chrono>
 using namespace  std::chrono;
-
+using namespace  entities;
 
 void decode_loop(entities::Video* video,EventManager* manager){
   bool blocked = false;

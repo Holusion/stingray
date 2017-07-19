@@ -9,7 +9,7 @@
 #include  <chrono>
 
 /*
- * USAGE : benchmark /path/to/video.
+ * USAGE : benchmark /path/to/video.mp4
  * Will give time taken to decode a chunk of frames.
  * It tests only reverse decode as there is no way forward decode is more problematic...
  */
@@ -21,7 +21,7 @@ void cycle(decoder::VideoDecoder* decoder,entities::Video* video ){
     decoder->decodeAndWrite(*video->buffer);
     for(i=0;i<DECODE_SIZE;i++){
       //We don't check buffer has enough elements : it should...
-      video->buffer->read();
+      video->buffer->forward();
     }
   }
   using dura = std::chrono::duration<double>;
@@ -41,7 +41,7 @@ int  main (int argc, char** argv) {
     return EXIT_FAILURE;
   }
 
-  video.buffer->switchDirection();
+  video.buffer->swap();
   try {
     while(true)
       cycle(&decoder,&video);

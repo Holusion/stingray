@@ -6,7 +6,7 @@ void VideoBuffer::switchDirection() {
   buffer.swap();
 }
 
-int  VideoBuffer::write(std::array<VideoFrame*, DECODE_SIZE>& data, E_Direction direction) {
+int  VideoBuffer::write(std::array<VideoFrame*, DECODE_SIZE>& data, Direction direction) {
 
     int  add = DECODE_SIZE;
 
@@ -44,16 +44,5 @@ int  VideoBuffer::write(std::array<VideoFrame*, DECODE_SIZE>& data, E_Direction 
 }
 
 VideoFrame*  VideoBuffer::read() {
-
-  //! Update Index
-  if (buffer.direction() == Direction::REVERSE
-      && m_index == 0)
-    m_index = m_lastIndex;
-  else if (buffer.direction() == Direction::NORMAL
-      && m_index >= m_lastIndex)
-    m_index = 0;
-  else
-    (buffer.direction() == Direction::NORMAL) ? ++m_index : --m_index;
-
   return buffer.forward();
 }
