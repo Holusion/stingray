@@ -1,6 +1,7 @@
 input_nasa_launch.mov
 real_test.mov
 voutput.mov
+test/fixtures/*.mp4
 
 .libs
 .deps

@@ -29,7 +29,6 @@ namespace decoder{
       int               height;
       //! @brief Some Libav/Ffmpeg data
       AVFormatContext*  formatCtx;
-      AVCodecContext*   codecCtxOrig;
       AVCodecContext*   codecCtx;
       int               streamIndex;
 

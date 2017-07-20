@@ -32,24 +32,23 @@ DecoderContext::DecoderContext(const char* file,int width,int height) {
     }
   if(this->codecCtx == nullptr)
     throw AVException(0,"No stream found from avformat_find_stream_info"); //! Couldn't find or Didn't find a video stream
-  //! Find the decoder for the video stream
+  //! Find the decoder ID for the video stream
   AVCodec*  codec = avcodec_find_decoder(this->codecCtx->codec_id);
   if(codec == nullptr)
     throw AVException(0,"avcodec_find_decoder : codec not found for stream"); // Codec not found
-  //! Copy context
+
   std::cout<<"Codec:"<<codec->name<<std::endl;
-  if ((this->codecCtxOrig = avcodec_alloc_context3(codec)) == nullptr)
-    throw AVException(0,"avcodec_alloc_context3 Failed");
-  ret = avcodec_copy_context(this->codecCtxOrig, this->codecCtx);
-  if(ret !=0){
-    throw AVException(ret,"avcodec_copy_context"); //! Error copying codec context
-  }
   //! Open codec
   ret = avcodec_open2(this->codecCtx, codec, nullptr);
   if(ret !=0){
     throw AVException(ret,"avcodec_open2"); //! Could not open codec
   }
-
+  //Configure codec context
+  if (this->codecCtx->hwaccel != NULL){
+    std::cout<<"Using hardware acceleration"<<std::endl;
+  }else{
+    std::cout<<"Using hardware acceleration"<<std::endl;
+  }
   this->nextFrame = 0;
   this->fps = getFps();
   this->nbFrames = videoSize();
@@ -60,7 +59,7 @@ DecoderContext::DecoderContext(const char* file,int width,int height) {
 
 DecoderContext::~DecoderContext() {
   avcodec_close(this->codecCtx);
-  avcodec_free_context(&this->codecCtxOrig);
+
 
   //! Close the video file
   avformat_close_input(&this->formatCtx);
