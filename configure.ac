@@ -28,7 +28,53 @@ AC_PROG_CXX
 AC_PROG_CC
 AC_LANG(C++)
 
-# Checks for modules
+
+# Optional functionalities
+# modules are default enabled
+AC_ARG_ENABLE([modules],
+    AS_HELP_STRING([--disable-modules], [Disable dynamic modules loading]))
+
+AS_IF([test "x$enable_modules" != "xno"], [
+  AC_DEFINE(ENABLE_MODULES,[1],[Enable dynamic modules loading])
+])
+# mouse control is default disabled
+AC_ARG_ENABLE([mouse],
+    AS_HELP_STRING([--enable-mouse], [Enable mouse control]))
+
+AS_IF([test "x$enable_mouse" == "xyes"], [
+  AC_DEFINE(ENABLE_MOUSE,[1],[Enable mouse control])
+])
+
+# autoexit (Default Disabled)
+#Exit stingray after some seconds of inactivity
+AC_ARG_ENABLE([autoexit],
+    AS_HELP_STRING([--enable-autoexit], [Enable autoexit feature]))
+
+AS_IF([test "x$enable_autoexit" == "xyes"], [
+  AC_DEFINE(ENABLE_AUTOEXIT,[1],[Enable autoexit feature])
+])
+
+AC_ARG_ENABLE([gstreamer],
+    AS_HELP_STRING([--enable-gstreamer], [Enable gstreamer for video decoding instead of ffmpeg]))
+
+AM_CONDITIONAL([ENABLE_GSTREAMER], [test "x$enable_gstreamer" == "xyes"])
+AS_IF([test "x$enable_gstreamer" == "xyes"], [
+  AC_DEFINE(ENABLE_GSTREAMER,[1],[Enable gstreamer decoder])
+  PKG_CHECK_MODULES(gstreamer, gstreamer-1.0)
+  PKG_CHECK_MODULES(gstreamerbase, gstreamer-app-1.0)
+  AC_CHECK_LIB([gstreamer-1.0], [gst_parse_launch])
+  AC_CHECK_LIB([gstapp-1.0], [gst_app_sink_pull_buffer],[],[
+    AC_CHECK_LIB([gstapp-1.0], [gst_app_sink_pull_sample],[
+      AC_DEFINE(USE_PULL_SAMPLE,[1],[use old app sink pull_sample function])
+    ],[
+      AC_MSG_ERROR("app sink is required to decode with gstreamer. Install base plugins")
+    ])
+
+  ])
+], [
+  AC_MSG_NOTICE("using ffmpeg for video decoding")
+])
+# Checks for pkg-config pc files
 PKG_CHECK_MODULES(SDL2, sdl2)
 PKG_CHECK_MODULES(avcodec, libavcodec >= 54.3.0)
 PKG_CHECK_MODULES(avformat, libavformat >= 54.3.0)
@@ -58,30 +104,7 @@ AC_TYPE_UINT32_T
 # Checks for library functions.
 AC_CHECK_FUNCS([floor strerror])
 
-# Optional functionalities
-# modules are default enabled
-AC_ARG_ENABLE([modules],
-    AS_HELP_STRING([--disable-modules], [Disable dynamic modules loading]))
 
-AS_IF([test "x$enable_modules" != "xno"], [
-  AC_DEFINE(ENABLE_MODULES,[1],[Enable dynamic modules loading])
-])
-# mouse control is default disabled
-AC_ARG_ENABLE([mouse],
-    AS_HELP_STRING([--enable-mouse], [Enable mouse control]))
-
-AS_IF([test "x$enable_mouse" == "xyes"], [
-  AC_DEFINE(ENABLE_MOUSE,[1],[Enable mouse control])
-])
-
-# autoexit (Default Disabled)
-#Exit stingray after some seconds of inactivity
-AC_ARG_ENABLE([autoexit],
-    AS_HELP_STRING([--enable-autoexit], [Enable autoexit feature]))
-
-AS_IF([test "x$enable_autoexit" == "xyes"], [
-  AC_DEFINE(ENABLE_AUTOEXIT,[1],[Enable autoexit feature])
-])
 
 AC_CONFIG_FILES([ Makefile
                   doc/Makefile

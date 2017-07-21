@@ -5,6 +5,7 @@
 
 extern "C" {
 #include  <libavutil/imgutils.h>
+#include "../config.h"
 }
 #include  "exceptions/sdl_exception.hpp"
 #include  "exceptions/av_exception.hpp"
@@ -19,7 +20,7 @@ namespace  core {
       SDL_Window*           m_window;
       SDL_Renderer*         m_renderer;
       SDL_Texture*          m_displayFrame;
-      AVFrame*              lastFrame;
+      char*                 lastFrame;
       int            m_width, m_height;
       FrameTimer timer;
     public:

@@ -1,10 +1,16 @@
 #ifndef  VIDEO_HPP
 #define  VIDEO_HPP
-
+extern "C" {
+#include "../config.h"
+}
 #include  "debuffer.hpp"
-#include "video_frame.hpp"
+#ifdef ENABLE_GSTREAMER
+#include "decoder_context_gst.hpp"
+#include "video_frame_gst.hpp"
+#else
 #include "decoder_context.hpp"
-
+#include "video_frame.hpp"
+#endif
 //! @namespace entities
 //! @brief Data namespace
 namespace  entities {

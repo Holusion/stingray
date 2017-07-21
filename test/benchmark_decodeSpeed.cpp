@@ -1,8 +1,10 @@
 #include "../config.h"
 #include  "constants.h"
 #include  "debug.h"
-#include  "video_decoder.hpp"
-#include  "video_frame.hpp"
+
+
+#include "video.hpp"
+
 #include  "exceptions/global_exception.hpp"
 #include  "exceptions/av_exception.hpp"
 #include  <thread>

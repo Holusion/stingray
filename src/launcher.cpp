@@ -2,8 +2,13 @@
 #include  "constants.h"
 #include  "debug.h"
 #include  "window.hpp"
-#include  "video_decoder.hpp"
-#include  "video_frame.hpp"
+#ifdef ENABLE_GSTREAMER
+  #include "video_decoder_gst.hpp"
+  #include  "video_frame_gst.hpp"
+#else
+  #include  "video_decoder.hpp"
+  #include  "video_frame.hpp"
+#endif
 #include  "events/event_manager.hpp"
 #include  "exceptions/global_exception.hpp"
 #include  "exceptions/sdl_exception.hpp"
@@ -23,6 +28,7 @@ void decode_loop(entities::Video* video,EventManager* manager){
       if(video->buffer->size() + DECODE_SIZE < video->buffer->limit()){
         blocked = false;
         decoder.decodeAndWrite(*video->buffer);
+        std::cout<<"decoded"<<std::endl;
       }else{ //Don't even decode if the buffer is nearly full.
         if (!blocked){
           DEBUG_LOG("Blocking : Buffer is full"<<std::endl);
@@ -39,12 +45,17 @@ void decode_loop(entities::Video* video,EventManager* manager){
     std::cerr << "Decode Thread -> " << e.what() << std::endl;
   }
 }
+
+void decode_event_loop(decoder::DecoderContext* ctx){
+  ctx->mainLoop();
+}
+
 void run(char ** args){
   core::Window  window;
   EventManager   manager;
   entities::Video        video(args[1],window.getWidth(),window.getHeight());
+  std::thread            decode_event_thread(decode_event_loop, &video.context);
   std::thread            decode_thread(decode_loop,&video,&manager);
-
   while(!manager.isEnd()){
     manager.update(video);
     window.draw(video);
@@ -57,6 +68,7 @@ int  main (int argc, char** argv) {
     return EXIT_FAILURE;
   }
   DEBUG_LOG("Debug Mode Enabled"<<std::endl);
+  gst_init (&argc, &argv);
   try {
     run(argv);
   }catch (SDLException& e) {

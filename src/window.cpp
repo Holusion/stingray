@@ -51,22 +51,7 @@ Window::Window() {
       m_height);
 
   /* Create black frame */
-  lastFrame = av_frame_alloc();
-  lastFrame->width = getWidth();
-  lastFrame->height = getHeight();
-  lastFrame->format = AV_PIX_FMT_YUVJ420P;
-  avpicture_fill((AVPicture*)lastFrame, NULL, AV_PIX_FMT_YUVJ420P, lastFrame->width, lastFrame->height);
-  int ret = av_image_alloc(lastFrame->data, lastFrame->linesize, lastFrame->width, lastFrame->height,
-      AV_PIX_FMT_YUVJ420P, 32);
-  if (ret < 0)
-    throw  AVException(ret, "Could not allocate raw picture buffer");
-  for (int j = 0; j < lastFrame->height; ++j) {
-    for (int x = 0 ; x < lastFrame->width; ++x) {
-      lastFrame->data[0][(j * lastFrame->linesize[0]) + x] = 0;
-      lastFrame->data[1][(j / 2 * lastFrame->linesize[1]) + x / 2] = 128;
-      lastFrame->data[2][(j / 2 * lastFrame->linesize[2]) + x / 2] = 128;
-    }
-  }
+  lastFrame = nullptr;
 }
 
 Window::~Window() {
@@ -78,7 +63,7 @@ void  Window::draw(entities::Video& video) {
 
   static const SDL_Rect position {0, 0, m_width, m_height};
   int waitingTime;
-  AVFrame*              frame;
+  char*              frame;
 
   timer.setTargetSpeed(video.speed);
   for(int i=0;i<timer.getSkipCount();i++){
@@ -98,22 +83,28 @@ void  Window::draw(entities::Video& video) {
   if ((video.buffer->size() > 0 && !video.pause)) {
     frame = video.buffer->forward()->frame();
     lastFrame = frame;
-  }else{
+  }else if(lastFrame != nullptr){
     frame = lastFrame;
+  }else{
+    return;
   }
   //! Draw
   SDL_SetRenderDrawColor(m_renderer, 255, 255, 255, 0);
   SDL_RenderClear(m_renderer);
-
-  SDL_UpdateYUVTexture(m_displayFrame,
-      &position,
-      frame->data[0],
-      frame->linesize[0],
-      frame->data[1],
-      frame->linesize[1],
-      frame->data[2],
-      frame->linesize[2]);
-
+  #ifdef ENABLE_GSTREAMER
+    SDL_Rect r{0, 0, m_width, m_height};
+    SDL_UpdateTexture(m_displayFrame, &r, frame,
+  		ROUND_UP_4(m_width));
+  #else
+    SDL_UpdateYUVTexture(m_displayFrame,
+        &position,
+        frame->data[0],
+        frame->linesize[0],
+        frame->data[1],
+        frame->linesize[1],
+        frame->data[2],
+        frame->linesize[2]);
+  #endif
   SDL_RenderCopy(m_renderer, m_displayFrame, &position, &position);
   SDL_RenderPresent(m_renderer);
 

@@ -4,7 +4,7 @@ SUBDIRS = doc vendor src test
 ACLOCAl_AMFLAGS = -I vendor/libltdl/m4 -I m4
 ### Binaries ###
 bin_PROGRAMS = stingray
-noinst_PROGRAMS = benchmark
+#noinst_PROGRAMS = benchmark
 check_PROGRAMS = test_stingray
 
 TESTS = $(check_PROGRAMS)
@@ -13,10 +13,10 @@ TESTS = $(check_PROGRAMS)
 ### Main Program flags ###
 
 stingray_CPPFLAGS = -Wall -Wextra -I$(top_srcdir)/vendor -I$(top_srcdir)/src \
-                  $(SDL2_CFLAGS) $(avcodec_CFLAGS) $(avformat_CFLAGS) $(avutil_CFLAGS) $(LTDLINCL)
+                  $(SDL2_CFLAGS) $(gstreamer_CFLAGS) $(gstreamerbase_CFLAGS) $(avcodec_CFLAGS) $(avformat_CFLAGS) $(avutil_CFLAGS) $(LTDLINCL)
 
 stingray_LDFLAGS	= -lpthread \
-                  $(SDL2_LIBS) $(avcodec_LIBS) $(avformat_LIBS) $(avutil_LIBS) -export-dynamic
+                  $(SDL2_LIBS) $(gstreamer_LIBS) $(gstreamerbase_LIBS) $(avcodec_LIBS) $(avformat_LIBS) $(avutil_LIBS) -export-dynamic
 stingray_LDADD = $(LIBLTDL)
 stingray_DEPENDENCIES = $(LTDLDEPS)
 
@@ -26,9 +26,13 @@ stingray_SOURCES= src/launcher.cpp \
   src/events/event_manager.cpp \
   src/frametimer.cpp \
   src/video.cpp \
-  src/video_decoder.cpp \
-  src/decoder_context.cpp \
   src/window.cpp
+
+if ENABLE_GSTREAMER
+  stingray_SOURCES+= src/video_decoder_gst.cpp src/decoder_context_gst.cpp
+else
+  stingray_SOURCES+= src/video_decoder.cpp src/decoder_context.cpp
+endif
 
 ### Main Program header files ###
 noinst_HEADERS =   src/constants.h \
@@ -62,9 +66,16 @@ noinst_HEADERS += test/test_frametimer.hpp \
 
 ### benchmark decoder ###
 benchmark_SOURCES = test/benchmark_decodeSpeed.cpp \
-  src/frametimer.cpp src/video_buffer.cpp src/video_decoder.cpp src/decoder_context.cpp src/video.cpp
+  src/frametimer.cpp src/video.cpp
+
+
+if ENABLE_GSTREAMER
+  benchmark_SOURCES+= src/video_decoder_gst.cpp src/decoder_context_gst.cpp
+else
+  benchmark_SOURCES+= src/video_decoder.cpp src/decoder_context.cpp
+endif
 
 benchmark_CPPFLAGS = -Wall -Wextra -I$(top_srcdir)/vendor -I$(top_srcdir)/src \
-                  $(avcodec_CFLAGS) $(avformat_CFLAGS) $(avutil_CFLAGS)
+                  $(gstreamer_CFLAGS) $(gstreamerbase_CFLAGS) $(avcodec_CFLAGS) $(avformat_CFLAGS) $(avutil_CFLAGS)
 
-benchmark_LDFLAGS	= -lpthread $(avcodec_LIBS) $(avformat_LIBS) $(avutil_LIBS) -export-dynamic
+benchmark_LDFLAGS	= -lpthread (gstreamer_LIBS) $(gstreamerbase_LIBS) $(avcodec_LIBS) $(avformat_LIBS) $(avutil_LIBS) -export-dynamic
