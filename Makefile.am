@@ -51,7 +51,7 @@ test_stingray_LDFLAGS = $(avcodec_LIBS) $(avformat_LIBS) $(avutil_LIBS)
 test_stingray_LDADD =  $(top_srcdir)/vendor/gtest/libgtest.a
 
 ### Check Program sources files ###
-test_stingray_SOURCES = test/test_main.cpp test/test_frametimer.cpp test/test_video_decoder.cpp test/test_debuffer.cpp \
+test_stingray_SOURCES = test/test_main.cpp test/test_debuffer.cpp \
   src/frametimer.cpp src/video_buffer.cpp src/video_decoder.cpp  src/decoder_context.cpp
 
 ### Check Program sources files ###

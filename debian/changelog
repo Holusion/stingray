@@ -1,6 +1,7 @@
-stingray (0.1.1) UNRELEASED; urgency=medium
+stingray (0.2.1) UNRELEASED; urgency=medium
 
   * fix some issues following real world tests
+  * Update for debian stretch
 
  -- Sebastien Dumetz <s.dumetz@holusion.com>  Wed, 05 Oct 2016 10:52:47 +0200
 

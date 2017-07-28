@@ -26,6 +26,8 @@ vendor/libltdl
 
 debian/stingray
 debian/*.substvars
+debian/.debhelper
+debian/debhelper-build-stamp
 debian/files
 
 # http://www.gnu.org/software/automake
