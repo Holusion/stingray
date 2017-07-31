@@ -13,7 +13,7 @@ TESTS = $(check_PROGRAMS)
 ### Main Program flags ###
 
 stingray_CPPFLAGS = -Wall -Wextra -I$(top_srcdir)/vendor -I$(top_srcdir)/src \
-                  $(SDL2_CFLAGS) $(avcodec_CFLAGS) $(avformat_CFLAGS) $(avutil_CFLAGS) $(LTDLINCL) 
+                  $(SDL2_CFLAGS) $(avcodec_CFLAGS) $(avformat_CFLAGS) $(avutil_CFLAGS) $(LTDLINCL)
 
 stingray_LDFLAGS	= -lpthread \
                   $(SDL2_LIBS) $(avcodec_LIBS) $(avformat_LIBS) $(avutil_LIBS) -export-dynamic
@@ -42,7 +42,7 @@ noinst_HEADERS =   src/constants.h \
   src/events/eventListener.hpp \
   src/debuffer.hpp \
   src/video_frame.hpp \
-  src/frametimer.hpp src/video.hpp src/video_buffer.hpp src/video_decoder.hpp src/decoder_context.hpp src/window.hpp
+  src/frametimer.hpp src/video.hpp src/video_decoder.hpp src/decoder_context.hpp src/window.hpp
 
 ### Check Program flags ###
 test_stingray_CPPFLAGS = -DFIXTURES=\"$(srcdir)/test\"  -DTESTS -I$(top_srcdir)/src -isystem $(top_srcdir)/vendor/gtest/include \
@@ -53,7 +53,7 @@ test_stingray_LDADD =  $(top_srcdir)/vendor/gtest/libgtest.a
 
 ### Check Program sources files ###
 test_stingray_SOURCES = test/test_main.cpp test/test_debuffer.cpp \
-  src/frametimer.cpp src/video_buffer.cpp src/video_decoder.cpp  src/decoder_context.cpp
+  src/frametimer.cpp src/video_decoder.cpp  src/decoder_context.cpp
 
 ### Check Program sources files ###
 noinst_HEADERS += test/test_frametimer.hpp \
@@ -63,7 +63,7 @@ noinst_HEADERS += test/test_frametimer.hpp \
 
 ### benchmark decoder ###
 benchmark_SOURCES = test/benchmark_decodeSpeed.cpp \
-  src/frametimer.cpp src/video_buffer.cpp src/video_decoder.cpp src/decoder_context.cpp src/video.cpp
+  src/frametimer.cpp src/video_decoder.cpp src/decoder_context.cpp src/video.cpp
 
 benchmark_CPPFLAGS = -Wall -Wextra -I$(top_srcdir)/vendor -I$(top_srcdir)/src \
                   $(avcodec_CFLAGS) $(avformat_CFLAGS) $(avutil_CFLAGS)

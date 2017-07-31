@@ -41,7 +41,7 @@ Window::Window() {
       SDL_RENDERER_ACCELERATED);
   if (m_renderer == NULL)
     throw SDLException( "SDL_CreateRenderer");
-
+  SDL_SetRenderDrawColor(m_renderer, 255, 255, 255, 0);
   SDL_GetWindowSize(m_window, &m_width, &m_height);
 
   m_displayFrame = SDL_CreateTexture(m_renderer,
@@ -103,7 +103,6 @@ void  Window::draw(entities::Video& video) {
     frame = lastFrame;
   }
   //! Draw
-  SDL_SetRenderDrawColor(m_renderer, 255, 255, 255, 0);
   SDL_RenderClear(m_renderer);
 
   SDL_UpdateYUVTexture(m_displayFrame,
