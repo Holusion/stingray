@@ -10,46 +10,61 @@
 #include  "exceptions/av_exception.hpp"
 #include  <thread>
 #include  <chrono>
+
 using namespace  std::chrono;
 using namespace  entities;
 
-void decode_loop(entities::Video* video,EventManager* manager){
-  bool blocked = false;
-  decoder::VideoDecoder decoder(video->context);
-
-  try {
-    while(!manager->isEnd()){
-      //std::this_thread::sleep_for(std::chrono::milliseconds(100)); //FIXME try something else, the old sleep was bad (100% cpu here)
-      if(video->buffer->size() + DECODE_SIZE < video->buffer->limit()){
-        blocked = false;
-        decoder.decodeAndWrite(*video->buffer);
-      }else{ //Don't even decode if the buffer is nearly full.
-        if (!blocked){
-          DEBUG_LOG("Blocking : Buffer is full"<<std::endl);
-          std::this_thread::sleep_for(std::chrono::milliseconds(10));
-        }else{
-          std::this_thread::sleep_for(std::chrono::milliseconds(40));
-        }
-        blocked = true;
-      }
-    }
-  }catch (AVException& e){
-    std::cerr <<"Decode Thread -> AV Exception : "<< e.what() <<std::endl;
-  }catch (GlobalException& e) {
-    std::cerr << "Decode Thread -> " << e.what() << std::endl;
+class DecodeThread{
+public:
+  std::thread th;
+  DecodeThread(entities::Video* v,EventManager* m):
+    th(DecodeThread::decode_loop, v, m) { }
+  ~DecodeThread(){
+    //thread is auto-stopped by manager
+    //We just need to join().
+    th.join();
   }
-}
+  static void decode_loop (entities::Video* video,EventManager* manager){
+    bool blocked = false;
+    decoder::VideoDecoder decoder(video->context);
+
+    try {
+      while(!manager->isEnd()){
+        //std::this_thread::sleep_for(std::chrono::milliseconds(100)); //FIXME try something else, the old sleep was bad (100% cpu here)
+        if(video->buffer->size() + DECODE_SIZE < video->buffer->limit()){
+          blocked = false;
+          decoder.decodeAndWrite(*video->buffer);
+        }else{ //Don't even decode if the buffer is nearly full.
+          if (!blocked){
+            DEBUG_LOG("Blocking : Buffer is full"<<std::endl);
+            std::this_thread::sleep_for(std::chrono::milliseconds(10));
+          }else{
+            std::this_thread::sleep_for(std::chrono::milliseconds(40));
+          }
+          blocked = true;
+        }
+      }
+    }catch (AVException& e){
+      std::cerr <<"Decode Thread -> AV Exception : "<< e.what() <<std::endl;
+    }catch (GlobalException& e) {
+      std::cerr << "Decode Thread -> " << e.what() << std::endl;
+    }
+  }
+};
+
+
+
 void run(char ** args){
   core::Window  window;
   EventManager   manager;
   entities::Video        video(args[1],window.getWidth(),window.getHeight());
-  std::thread            decode_thread(decode_loop,&video,&manager);
+  DecodeThread          *decoder = new DecodeThread(&video,&manager);
 
   while(!manager.isEnd()){
     manager.update(video);
     window.draw(video);
   }
-  decode_thread.join();
+  delete decoder;
 }
 
 int  main (int argc, char** argv) {

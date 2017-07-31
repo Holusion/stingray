@@ -46,8 +46,6 @@ DecoderContext::DecoderContext(const char* file,int width,int height) {
   //Configure codec context
   if (this->codecCtx->hwaccel != NULL){
     std::cout<<"Using hardware acceleration"<<std::endl;
-  }else{
-    std::cout<<"Using hardware acceleration"<<std::endl;
   }
   this->nextFrame = 0;
   this->fps = getFps();

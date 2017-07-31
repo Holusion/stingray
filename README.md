@@ -19,6 +19,14 @@ A Benchmark tool is also produced on `make`. It can be used like :
 
 With different encodings or to test code performance improvement.
 
+### Debug
+
+Compiling with debug symbols is done like :
+
+    make clean
+    ./configure CPPFLAGS=-DDEBUG
+    make
+
 # Hardware acceleration
 
 ## Preamble

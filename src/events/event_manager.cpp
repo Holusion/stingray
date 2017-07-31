@@ -54,7 +54,7 @@ void EventManager::openModule(char* filename){
   Module input_module;
   std::cout<<"Opening : "<<filename<<std::endl;
   input_module.handle = lt_dlopenext (filename);
-  if(!input_module.handle){
+  if(input_module.handle == NULL){
     std::cerr<<"LT_ERROR  lt_dlopenext (" << filename << ") : " <<lt_dlerror()<<std::endl;
     return;
   }
@@ -110,7 +110,7 @@ void  EventManager::update(entities::Video& video) {
     quit = true;
   }
   if(quit){
-    std::cout<<"Exit requested from input"<<std::endl;
+    std::cout<<"Exit"<<std::endl;
   }
   if(axis == 0){
     axis = events.getAxis(); //keyboard is ignored if any other input is active.
@@ -135,7 +135,7 @@ void  EventManager::update(entities::Video& video) {
   {
     video.buffer->swap();
   }
-  video.speed = video.context.fps *((float)std::abs(axis))* 0.25;
+  video.speed = (video.context.fps *std::abs(axis))/4;
 }
 /* Copyright (C) 2016 Sebastien DUMETZ
  * This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.

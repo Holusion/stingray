@@ -70,6 +70,7 @@ Window::Window() {
 }
 
 Window::~Window() {
+  std::cout<<"SDL quit"<<std::endl;
   SDL_DestroyWindow(m_window);
   SDL_Quit();
 }

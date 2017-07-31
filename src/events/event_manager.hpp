@@ -37,6 +37,7 @@ class  EventManager {
     bool  isEnd() { return quit; }
     //! @brief Update video data and more
     void         update(entities::Video& video);
+    void exit(){ quit = true; };
     #ifdef ENABLE_MODULES
     void loadModules();
     void openModule(char* filename);

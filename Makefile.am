@@ -13,12 +13,13 @@ TESTS = $(check_PROGRAMS)
 ### Main Program flags ###
 
 stingray_CPPFLAGS = -Wall -Wextra -I$(top_srcdir)/vendor -I$(top_srcdir)/src \
-                  $(SDL2_CFLAGS) $(avcodec_CFLAGS) $(avformat_CFLAGS) $(avutil_CFLAGS) $(LTDLINCL)
+                  $(SDL2_CFLAGS) $(avcodec_CFLAGS) $(avformat_CFLAGS) $(avutil_CFLAGS) $(LTDLINCL) 
 
 stingray_LDFLAGS	= -lpthread \
                   $(SDL2_LIBS) $(avcodec_LIBS) $(avformat_LIBS) $(avutil_LIBS) -export-dynamic
 stingray_LDADD = $(LIBLTDL)
 stingray_DEPENDENCIES = $(LTDLDEPS)
+
 
 ### Main Program sources files ###
 stingray_SOURCES= src/launcher.cpp \
