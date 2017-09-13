@@ -7,6 +7,7 @@ RUN apt-get install -y build-essential
 RUN mkdir -p /src
 WORKDIR /src
 COPY . /src/
+RUN ./autogen.sh
 RUN ./configure --prefix=/usr
 RUN make
 RUN make check
