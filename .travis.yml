@@ -1,11 +1,5 @@
-sudo: required
-dist: trusty
 language: cpp
-addons:
-  apt:
-    packages:
-      - libsdl2-dev
-      - libavcodec-dev
-      - libavformat-dev
-      - libavutil-dev
-install: ./autogen.sh
+#we need docker bto run on ubuntu >= 16.04 to get libavcodec56 or above
+services:
+ - docker
+install: docker build . 
