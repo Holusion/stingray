@@ -1,6 +1,6 @@
 language: cpp
 #we need docker bto run on ubuntu >= 16.04 to get libavcodec56 or above
 services:
- - docker
+  - docker
 script:
-	- docker build . 
+  - docker build . 
