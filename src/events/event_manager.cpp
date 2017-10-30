@@ -105,6 +105,7 @@ void  EventManager::update(entities::Video& video) {
     }
     axis += modules[i].listener->getAxis();
     quit = (modules[i].listener->getQuit() != 0 || quit)?true:false; //prevent quit unsetting
+    //currentState = modules[i].listener->getState();
   }
   if (events.getQuit() != 0){
     quit = true;
@@ -136,6 +137,28 @@ void  EventManager::update(entities::Video& video) {
     video.buffer->swap();
   }
   video.speed = (video.context.fps *std::abs(axis))/4;
+
+  if(currentState == "fadeIn") {
+    fadeIn(video);
+  } else if(currentState == "fadeOut") {
+    fadeOut(video);
+  } else
+    video.alpha = 255;
+}
+
+void EventManager::fadeIn(entities::Video& video) {
+  if(video.alpha >= 255) {
+    video.alpha = 255;
+    currentState = "";
+  } else
+    video.alpha += 255 * fadeMultiplier;
+}
+
+void EventManager::fadeOut(entities::Video& video) {
+  if(video.alpha <= 0)
+    video.alpha = 0;
+  else
+    video.alpha -= 255 * fadeMultiplier;
 }
 /* Copyright (C) 2016 Sebastien DUMETZ
  * This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.

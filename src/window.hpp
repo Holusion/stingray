@@ -22,6 +22,8 @@ namespace  core {
       AVFrame*              lastFrame;
       int            m_width, m_height;
       FrameTimer timer;
+      float fadeMultiplier = 0.007f;
+      int alpha;
     public:
       Window();
       ~Window();

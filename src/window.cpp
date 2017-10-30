@@ -41,7 +41,7 @@ Window::Window() {
       SDL_RENDERER_ACCELERATED);
   if (m_renderer == NULL)
     throw SDLException( "SDL_CreateRenderer");
-  SDL_SetRenderDrawColor(m_renderer, 255, 255, 255, 0);
+  SDL_SetRenderDrawColor(m_renderer, 0, 0, 0, 0);
   SDL_GetWindowSize(m_window, &m_width, &m_height);
 
   m_displayFrame = SDL_CreateTexture(m_renderer,
@@ -67,6 +67,7 @@ Window::Window() {
       lastFrame->data[2][(j / 2 * lastFrame->linesize[2]) + x / 2] = 128;
     }
   }
+  alpha = 255;
 }
 
 Window::~Window() {
@@ -113,6 +114,9 @@ void  Window::draw(entities::Video& video) {
       frame->linesize[1],
       frame->data[2],
       frame->linesize[2]);
+
+  SDL_SetTextureBlendMode(m_displayFrame, SDL_BLENDMODE_BLEND);
+  SDL_SetTextureAlphaMod(m_displayFrame, video.alpha);
 
   SDL_RenderCopy(m_renderer, m_displayFrame, &position, &position);
   SDL_RenderPresent(m_renderer);

@@ -31,6 +31,8 @@ class  EventManager {
     bool            quit; //!< Boolean which decide if the program run or not
     SDLEvents    events;
     std::vector<struct moduleStruct> modules;
+    float fadeMultiplier = 0.007f;
+    char* currentState = "fadeIn";
   public:
     EventManager();
     ~EventManager();
@@ -47,5 +49,9 @@ class  EventManager {
     int autoexit_count = 0;
     int lastAxis=0;
     #endif
+
+  private:
+    void fadeIn(entities::Video& video);
+    void fadeOut(entities::Video& video);
 };
 #endif
