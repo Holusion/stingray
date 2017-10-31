@@ -8,11 +8,13 @@
 #include  "exceptions/global_exception.hpp"
 #include  "exceptions/sdl_exception.hpp"
 #include  "exceptions/av_exception.hpp"
+#include  "dbus/dbus.hpp"
 #include  <thread>
 #include  <chrono>
 
 using namespace  std::chrono;
 using namespace  entities;
+using namespace  dbus;
 
 class DecodeThread{
 public:
@@ -52,19 +54,38 @@ public:
   }
 };
 
+class DBusThread {
+public:
+  std::thread th;
 
+  DBusThread(dbus::DBus* bus, EventManager* manager):
+    th(DBusThread::listen_loop, bus, manager) {}
+
+  ~DBusThread() {
+    th.join();
+  }
+
+  static void listen_loop(dbus::DBus* bus, EventManager* manager) {
+    while(!manager->isEnd()) {
+      bus->update();
+    }
+  }
+};
 
 void run(char ** args){
   core::Window  window;
   EventManager   manager;
+  dbus::DBus    bus;
   entities::Video        video(args[1],window.getWidth(),window.getHeight());
   DecodeThread          *decoder = new DecodeThread(&video,&manager);
+  DBusThread            *listener = new DBusThread(&bus, &manager);
 
   while(!manager.isEnd()){
     manager.update(video);
     window.draw(video);
   }
   delete decoder;
+  delete listener;
 }
 
 int  main (int argc, char** argv) {
