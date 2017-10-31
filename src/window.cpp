@@ -67,7 +67,6 @@ Window::Window() {
       lastFrame->data[2][(j / 2 * lastFrame->linesize[2]) + x / 2] = 128;
     }
   }
-  alpha = 255;
 }
 
 Window::~Window() {
