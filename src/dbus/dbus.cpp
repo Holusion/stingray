@@ -45,10 +45,12 @@ void DBus::update() {
     return;
   }
 
-  r = sd_bus_wait(bus, (uint64_t) -1);
-  if(r < 0) {
-    std::cerr << "Failed to wait on bus: " << (-r) << std::endl;
-    return;
+  if(!DBus::manager->isEnd()) {
+    r = sd_bus_wait(bus, (uint64_t) 1);
+    if(r < 0) {
+      std::cerr << "Failed to wait on bus: " << (-r) << std::endl;
+      return;
+    }
   }
 }
 
