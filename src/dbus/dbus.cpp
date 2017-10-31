@@ -52,16 +52,6 @@ void DBus::update() {
   }
 }
 
-int DBus::method_hello(sd_bus_message *m, void *userdata, sd_bus_error *ret_error) {
-  int r = sd_bus_message_read(m, "");
-  if(r < 0) {
-    std::cerr << "Failed to parse parameters: " << (-r) << std::endl;
-    return r;
-  }
-
-  return sd_bus_reply_method_return(m, "x", "Hello World") ;
-}
-
 /**
   fadeOut -> busctl --user call com.stingray.Process /com/stingray/Process com.stingray.Process VideoState x 1
   fadeIn ->  busctl --user call com.stingray.Process /com/stingray/Process com.stingray.Process VideoState x 0
@@ -93,7 +83,6 @@ int DBus::method_video_state(sd_bus_message *m, void *userdata, sd_bus_error *re
 
 const sd_bus_vtable DBus::stingray_vtable[] = {
   vtable::start(0),
-  vtable::method("Hello", "", "x", DBus::method_hello, SD_BUS_VTABLE_UNPRIVILEGED),
   vtable::method("VideoState", "x", "x", DBus::method_video_state, SD_BUS_VTABLE_UNPRIVILEGED),
   vtable::end()
 };
