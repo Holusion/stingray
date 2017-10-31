@@ -75,7 +75,7 @@ public:
 void run(char ** args){
   core::Window  window;
   EventManager   manager;
-  dbus::DBus    bus;
+  dbus::DBus    bus(&manager);
   entities::Video        video(args[1],window.getWidth(),window.getHeight());
   DecodeThread          *decoder = new DecodeThread(&video,&manager);
   DBusThread            *listener = new DBusThread(&bus, &manager);

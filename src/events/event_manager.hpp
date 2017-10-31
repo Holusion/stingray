@@ -32,10 +32,10 @@ class  EventManager {
     SDLEvents    events;
     std::vector<struct moduleStruct> modules;
     float fadeMultiplier = 0.007f;
-    char* currentState = "fadeIn";
   public:
     EventManager();
     ~EventManager();
+    char* currentState = "fadeIn";
     bool  isEnd() { return quit; }
     //! @brief Update video data and more
     void         update(entities::Video& video);
