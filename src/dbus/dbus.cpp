@@ -62,6 +62,10 @@ int DBus::method_hello(sd_bus_message *m, void *userdata, sd_bus_error *ret_erro
   return sd_bus_reply_method_return(m, "x", "Hello World") ;
 }
 
+/**
+  fadeOut -> busctl --user call com.stingray.Process /com/stingray/Process com.stingray.Process VideoState x 1
+  fadeIn ->  busctl --user call com.stingray.Process /com/stingray/Process com.stingray.Process VideoState x 0
+*/
 int DBus::method_video_state(sd_bus_message *m, void *userdata, sd_bus_error *ret_error) {
   char* videoState;
   int param;
