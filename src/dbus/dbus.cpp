@@ -61,30 +61,19 @@ void DBus::update() {
 int DBus::method_video_state(sd_bus_message *m, void *userdata, sd_bus_error *ret_error) {
   char* videoState;
   int param;
-  int r = sd_bus_message_read(m, "x", &param);
+  int r = sd_bus_message_read(m, "s", &videoState);
   if(r < 0) {
     std::cerr << "Failed to parse parameters: " << (-r) << std::endl;
     return r;
   }
 
-  switch(param) {
-    case 0:
-      videoState = "fadeIn";
-      break;
-    case 1:
-      videoState = "fadeOut";
-      break;
-    default:
-      "";
-  }
-
   cerr << "State changed to " << videoState << endl;
-  manager->currentState = videoState;
-  return sd_bus_reply_method_return(m, "x", r) ;
+  manager->currentState = (char*)videoState;
+  return sd_bus_reply_method_return(m, "s", videoState) ;
 }
 
 const sd_bus_vtable DBus::stingray_vtable[] = {
   vtable::start(0),
-  vtable::method("VideoState", "x", "x", DBus::method_video_state, SD_BUS_VTABLE_UNPRIVILEGED),
+  vtable::method("VideoState", "s", "s", DBus::method_video_state, SD_BUS_VTABLE_UNPRIVILEGED),
   vtable::end()
 };

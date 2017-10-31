@@ -138,9 +138,9 @@ void  EventManager::update(entities::Video& video) {
   }
   video.speed = (video.context.fps *std::abs(axis))/4;
 
-  if(currentState == "fadeIn") {
+  if(strcmp(currentState, "fadeIn") == 0) {
     fadeIn(video);
-  } else if(currentState == "fadeOut") {
+  } else if(strcmp(currentState, "fadeOut") == 0) {
     fadeOut(video);
   } else
     video.alpha = 255;

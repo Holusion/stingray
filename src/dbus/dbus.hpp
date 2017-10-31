@@ -17,7 +17,6 @@ namespace dbus {
     private:
       static EventManager* manager;
       static int method_video_state(sd_bus_message *m, void *userdata, sd_bus_error *ret_error);
-      static int method_hello(sd_bus_message *m, void *userdata, sd_bus_error *ret_error) ;
       static const sd_bus_vtable stingray_vtable[];
   };
 }
