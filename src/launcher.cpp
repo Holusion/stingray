@@ -91,7 +91,6 @@ void run(char ** args){
       manager.nextVideo = "";
       manager.currentState = "fadeIn";
       decoder = new DecodeThread(video,&manager);
-      continue;
     }
   }
   delete decoder;
