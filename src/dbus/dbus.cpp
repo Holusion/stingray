@@ -55,8 +55,7 @@ void DBus::update() {
 }
 
 /**
-  fadeOut -> busctl --user call com.stingray.Process /com/stingray/Process com.stingray.Process VideoState x 1
-  fadeIn ->  busctl --user call com.stingray.Process /com/stingray/Process com.stingray.Process VideoState x 0
+  changeVideo -> busctl --user call com.stingray.Process /com/stingray/Process com.stingray.Process VideoState s <path-of-next-video>
 */
 int DBus::method_video_state(sd_bus_message *m, void *userdata, sd_bus_error *ret_error) {
   char* videoState;
@@ -68,7 +67,6 @@ int DBus::method_video_state(sd_bus_message *m, void *userdata, sd_bus_error *re
   }
 
   cerr << "State changed to " << videoState << endl;
-  //manager->currentState = (char*)videoState;
   manager->nextVideo = (char*)videoState;
   manager->currentState = "fadeOut";
   return sd_bus_reply_method_return(m, "s", videoState) ;

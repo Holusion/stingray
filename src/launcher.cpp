@@ -84,6 +84,7 @@ void run(char ** args){
   while(!manager.isEnd()){
     manager.update(*video);
     window.draw(*video);
+
     if(strcmp(manager.currentState, "switch") == 0) {
       delete decoder;
       video = new entities::Video(manager.nextVideo, window.getWidth(), window.getHeight());
