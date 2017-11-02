@@ -36,6 +36,7 @@ class  EventManager {
     EventManager();
     ~EventManager();
     char* currentState = "fadeIn";
+    char* nextVideo = "";
     bool  isEnd() { return quit; }
     //! @brief Update video data and more
     void         update(entities::Video& video);

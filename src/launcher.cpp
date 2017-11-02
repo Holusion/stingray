@@ -30,8 +30,9 @@ public:
     bool blocked = false;
     decoder::VideoDecoder decoder(video->context);
 
+    // std::this_thread::sleep_for(std::chrono::milliseconds(2000));
     try {
-      while(!manager->isEnd()){
+      while(!manager->isEnd() && strcmp(manager->currentState, "switch")){
         //std::this_thread::sleep_for(std::chrono::milliseconds(100)); //FIXME try something else, the old sleep was bad (100% cpu here)
         if(video->buffer->size() + DECODE_SIZE < video->buffer->limit()){
           blocked = false;
@@ -76,13 +77,21 @@ void run(char ** args){
   core::Window  window;
   EventManager   manager;
   dbus::DBus    bus(&manager);
-  entities::Video        video(args[1],window.getWidth(),window.getHeight());
-  DecodeThread          *decoder = new DecodeThread(&video,&manager);
+  entities::Video* video = new entities::Video(args[1],window.getWidth(),window.getHeight());
+  DecodeThread          *decoder = new DecodeThread(video,&manager);
   DBusThread            *listener = new DBusThread(&bus, &manager);
 
   while(!manager.isEnd()){
-    manager.update(video);
-    window.draw(video);
+    manager.update(*video);
+    window.draw(*video);
+    if(strcmp(manager.currentState, "switch") == 0) {
+      delete decoder;
+      video = new entities::Video(manager.nextVideo, window.getWidth(), window.getHeight());
+      manager.nextVideo = "";
+      manager.currentState = "fadeIn";
+      decoder = new DecodeThread(video,&manager);
+      continue;
+    }
   }
   delete decoder;
   delete listener;

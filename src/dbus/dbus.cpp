@@ -68,7 +68,9 @@ int DBus::method_video_state(sd_bus_message *m, void *userdata, sd_bus_error *re
   }
 
   cerr << "State changed to " << videoState << endl;
-  manager->currentState = (char*)videoState;
+  //manager->currentState = (char*)videoState;
+  manager->nextVideo = (char*)videoState;
+  manager->currentState = "fadeOut";
   return sd_bus_reply_method_return(m, "s", videoState) ;
 }
 

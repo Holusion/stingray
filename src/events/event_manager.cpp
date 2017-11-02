@@ -155,8 +155,10 @@ void EventManager::fadeIn(entities::Video& video) {
 }
 
 void EventManager::fadeOut(entities::Video& video) {
-  if(video.alpha <= 0)
+  if(video.alpha <= 0) {
     video.alpha = 0;
+    currentState = "switch";
+  }
   else
     video.alpha -= 255 * fadeMultiplier;
 }

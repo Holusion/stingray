@@ -12,10 +12,10 @@ TESTS = $(check_PROGRAMS)
 
 ### Main Program flags ###
 
-stingray_CPPFLAGS = -Wall -Wextra -I$(top_srcdir)/vendor -I$(top_srcdir)/src \
+stingray_CPPFLAGS = -Wall -Wextra -I$(top_srcdir)/vendor -I$(top_srcdir)/src -g \
                   $(SDL2_CFLAGS) $(avcodec_CFLAGS) $(avformat_CFLAGS) $(avutil_CFLAGS) $(LTDLINCL)
 
-stingray_LDFLAGS	= -lpthread \
+stingray_LDFLAGS	= -lpthread `pkg-config --cflags --libs libsystemd` \
                   $(SDL2_LIBS) $(avcodec_LIBS) $(avformat_LIBS) $(avutil_LIBS) -export-dynamic
 stingray_LDADD = $(LIBLTDL)
 stingray_DEPENDENCIES = $(LTDLDEPS)
@@ -23,6 +23,7 @@ stingray_DEPENDENCIES = $(LTDLDEPS)
 
 ### Main Program sources files ###
 stingray_SOURCES= src/launcher.cpp \
+  src/dbus/dbus.cpp \
   src/events/SDLEvents.cpp \
   src/events/event_manager.cpp \
   src/frametimer.cpp \
@@ -34,6 +35,8 @@ stingray_SOURCES= src/launcher.cpp \
 ### Main Program header files ###
 noinst_HEADERS =   src/constants.h \
   src/debug.h \
+  src/dbus/dbus.hpp \
+  src/dbus/vtable.hpp \
   src/exceptions/sdl_exception.hpp \
   src/exceptions/av_exception.hpp \
   src/exceptions/global_exception.hpp \
