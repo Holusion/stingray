@@ -1,7 +1,7 @@
 FROM debian:stable
-RUN apt-get update 
-RUN apt-get install -y libavcodec-dev libavformat-dev libavutil-dev 
-RUN apt-get install -y libsdl2-dev
+RUN apt-get update
+RUN apt-get install -y libavcodec-dev libavformat-dev libavutil-dev
+RUN apt-get install -y libsdl2-dev libsystemd-dev systemd
 RUN apt-get install -y build-essential autotools-dev autoconf libtool
 
 RUN mkdir -p /src
