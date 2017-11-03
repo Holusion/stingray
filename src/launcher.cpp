@@ -30,7 +30,6 @@ public:
     bool blocked = false;
     decoder::VideoDecoder decoder(video->context);
 
-    // std::this_thread::sleep_for(std::chrono::milliseconds(2000));
     try {
       while(!manager->isEnd() && strcmp(manager->currentState, "switch")){
         //std::this_thread::sleep_for(std::chrono::milliseconds(100)); //FIXME try something else, the old sleep was bad (100% cpu here)
@@ -87,6 +86,7 @@ void run(char ** args){
 
     if(strcmp(manager.currentState, "switch") == 0) {
       delete decoder;
+      delete video;
       video = new entities::Video(manager.nextVideo, window.getWidth(), window.getHeight());
       manager.nextVideo = "";
       manager.currentState = "fadeIn";
@@ -95,6 +95,7 @@ void run(char ** args){
   }
   delete decoder;
   delete listener;
+  delete video;
 }
 
 int  main (int argc, char** argv) {

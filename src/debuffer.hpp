@@ -41,6 +41,7 @@ template <class T> class  DeBuffer {
 
   public:
     std::size_t size() const{return data.size();}
+    std::size_t sizeBackData() const{return backData.size();}
     std::size_t limit() const { return maxSize; }
     Direction   direction() const {return d; }
     unsigned int index() const {return current;}
@@ -49,6 +50,9 @@ template <class T> class  DeBuffer {
     bool write(T item);
     T forward();
     void forwardIndex();
+    T get(unsigned int i);
+    T getBackData(unsigned int i);
+    void clean();
 };
 
 //Write with a direction, to allow for write-after-swap
@@ -107,5 +111,21 @@ void  DeBuffer<T>::swap(void) {
   std::lock_guard<std::mutex> lock(m);
   d = (d == Direction::NORMAL) ? Direction::REVERSE : Direction::NORMAL;
   data.swap(backData);
+}
+
+template <class T>
+T DeBuffer<T>::get(unsigned int i) {
+  return data[i];
+}
+
+template <class T>
+T DeBuffer<T>::getBackData(unsigned int i) {
+  return backData[i];
+}
+
+template <class T>
+void DeBuffer<T>::clean() {
+  buffer_t().swap(data);
+  buffer_t().swap(backData);
 }
 #endif

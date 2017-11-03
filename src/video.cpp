@@ -10,5 +10,15 @@ Video::Video(const char* file,int width,int height) : context(file, width, heigh
 }
 
 Video::~Video(){
+  std::cout << "test" << std::endl;
+  for(int i = 1; i < buffer->sizeBackData(); i++) {
+    if(buffer->getBackData(i) != nullptr) delete buffer->getBackData(i);
+  }
+
+  for(int i = 1; i < buffer->size(); i++) {
+    if(buffer->get(i) != nullptr) delete buffer->get(i);
+  }
+
+  buffer->clean();
   delete buffer;
 }
