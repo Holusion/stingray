@@ -138,9 +138,9 @@ void  EventManager::update(entities::Video& video) {
   }
   video.speed = (video.context.fps *std::abs(axis))/4;
 
-  if(strcmp(currentState, "fadeIn") == 0) {
+  if(currentState == fade_in) {
     fadeIn(video);
-  } else if(strcmp(currentState, "fadeOut") == 0) {
+  } else if(currentState == fade_out) {
     fadeOut(video);
   } else
     video.alpha = 255;
@@ -149,7 +149,7 @@ void  EventManager::update(entities::Video& video) {
 void EventManager::fadeIn(entities::Video& video) {
   if(video.alpha >= 255) {
     video.alpha = 255;
-    currentState = "";
+    currentState = none;
   } else
     video.alpha += 255 * fadeMultiplier;
 }
@@ -157,7 +157,7 @@ void EventManager::fadeIn(entities::Video& video) {
 void EventManager::fadeOut(entities::Video& video) {
   if(video.alpha <= 0) {
     video.alpha = 0;
-    currentState = "switch";
+    currentState = switch_state;
   }
   else
     video.alpha -= 255 * fadeMultiplier;

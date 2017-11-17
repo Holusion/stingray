@@ -31,7 +31,7 @@ public:
     decoder::VideoDecoder decoder(video->context);
 
     try {
-      while(!manager->isEnd() && strcmp(manager->currentState, "switch")){
+      while(!manager->isEnd() && manager->currentState == switch_state){
         //std::this_thread::sleep_for(std::chrono::milliseconds(100)); //FIXME try something else, the old sleep was bad (100% cpu here)
         if(video->buffer->size() + DECODE_SIZE < video->buffer->limit()){
           blocked = false;
@@ -84,12 +84,12 @@ void run(char ** args){
     manager.update(*video);
     window.draw(*video);
 
-    if(strcmp(manager.currentState, "switch") == 0) {
+    if(manager.currentState == switch_state) {
       delete decoder;
       delete video;
       video = new entities::Video(manager.nextVideo, window.getWidth(), window.getHeight());
       manager.nextVideo = "";
-      manager.currentState = "fadeIn";
+      manager.currentState = fade_in;
       decoder = new DecodeThread(video,&manager);
     }
   }
