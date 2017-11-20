@@ -13,10 +13,14 @@ TESTS = $(check_PROGRAMS)
 ### Main Program flags ###
 
 stingray_CPPFLAGS = -Wall -Wextra -I$(top_srcdir)/vendor -I$(top_srcdir)/src -g \
-                  $(SDL2_CFLAGS) $(avcodec_CFLAGS) $(avformat_CFLAGS) $(avutil_CFLAGS) $(LTDLINCL)
+                  $(systemd_CFLAGS) $(SDL2_CFLAGS) \
+                  $(avcodec_CFLAGS) $(avformat_CFLAGS) $(avutil_CFLAGS) \
+                  $(LTDLINCL)
 
-stingray_LDFLAGS	= -lpthread `pkg-config --cflags --libs libsystemd` \
-                  $(SDL2_LIBS) $(avcodec_LIBS) $(avformat_LIBS) $(avutil_LIBS) -export-dynamic
+stingray_LDFLAGS	= -lpthread $(systemd_LIBS) $(SDL2_LIBS) \
+                  $(avcodec_LIBS) $(avformat_LIBS) $(avutil_LIBS) \
+                  -export-dynamic
+
 stingray_LDADD = $(LIBLTDL)
 stingray_DEPENDENCIES = $(LTDLDEPS)
 

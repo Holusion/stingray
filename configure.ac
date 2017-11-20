@@ -33,6 +33,7 @@ PKG_CHECK_MODULES(SDL2, sdl2)
 PKG_CHECK_MODULES(avcodec, libavcodec >= 54.3.0)
 PKG_CHECK_MODULES(avformat, libavformat >= 54.3.0)
 PKG_CHECK_MODULES(avutil, libavutil >= 52.3.0)
+PKG_CHECK_MODULES(systemd, libsystemd)
 
 
 # Checks for libraries.
@@ -41,6 +42,7 @@ AC_CHECK_LIB([avcodec], [avcodec_find_decoder])
 AC_CHECK_LIB([avformat], [avformat_alloc_context])
 AC_CHECK_LIB([avutil], [av_strerror])
 AC_CHECK_LIB([pthread], [pthread_create])
+AC_CHECK_LIB([systemd], [sd_bus_open_user])
 
 # Checks for header files.
 AC_CHECK_HEADERS([fcntl.h inttypes.h string.h unistd.h])
