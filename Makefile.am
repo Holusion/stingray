@@ -1,5 +1,5 @@
 AUTOMAKE_OPTIONS = foreign
-SUBDIRS = doc vendor src test
+SUBDIRS = doc vendor src test data
 
 ACLOCAl_AMFLAGS = -I vendor/libltdl/m4 -I m4
 ### Binaries ###

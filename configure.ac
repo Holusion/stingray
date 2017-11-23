@@ -91,6 +91,7 @@ AC_CONFIG_FILES([ Makefile
                   test/Makefile
                   vendor/Makefile
                   vendor/libltdl/Makefile
+                  data/Makefile
                 ])
 
 AC_OUTPUT

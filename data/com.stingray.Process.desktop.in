@@ -1,0 +1,3 @@
+[Desktop Entry]
+Exec=stingray %U
+DBusActivatable=true
