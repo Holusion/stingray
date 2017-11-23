@@ -31,7 +31,7 @@ public:
     decoder::VideoDecoder decoder(video->context);
 
     try {
-      while(!manager->isEnd() && manager->currentState == switch_state){
+      while(!manager->isEnd() && manager->currentState != switch_state){
         //std::this_thread::sleep_for(std::chrono::milliseconds(100)); //FIXME try something else, the old sleep was bad (100% cpu here)
         if(video->buffer->size() + DECODE_SIZE < video->buffer->limit()){
           blocked = false;
