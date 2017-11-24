@@ -1,3 +1,7 @@
 [Desktop Entry]
-Exec=stingray %U
+Version=1.0
+Type=Application
+Name=Stingray
+TryExec=stingray
+Exec=stingray %f
 DBusActivatable=true

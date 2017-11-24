@@ -1,3 +1,3 @@
 [D-BUS Service]
-name=com.stingray.Process
+Name=com.stingray.Process
 Exec=@bindir@/stingray
