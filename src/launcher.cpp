@@ -31,7 +31,7 @@ public:
     decoder::VideoDecoder decoder(video->context);
 
     try {
-      while(!manager->isEnd() && manager->currentState != switch_state){
+      while(!manager->isEnd() && manager->currentState != switch_state && manager->currentState != not_play){
         //std::this_thread::sleep_for(std::chrono::milliseconds(100)); //FIXME try something else, the old sleep was bad (100% cpu here)
         if(video->buffer->size() + DECODE_SIZE < video->buffer->limit()){
           blocked = false;
@@ -72,25 +72,37 @@ public:
   }
 };
 
-void run(char ** args){
+void run(int argc, char ** args){
   core::Window  window;
   EventManager   manager;
   dbus::DBus    bus(&manager);
-  entities::Video* video = new entities::Video(args[1],window.getWidth(),window.getHeight());
-  DecodeThread          *decoder = new DecodeThread(video,&manager);
   DBusThread            *listener = new DBusThread(&bus, &manager);
+  entities::Video* video = NULL;
+  DecodeThread          *decoder = NULL;
+  
+  if(argc == 2) {
+    video = new entities::Video(args[1],window.getWidth(),window.getHeight());
+    decoder = new DecodeThread(video,&manager);
+    manager.currentState = fade_in;
+  }
 
   while(!manager.isEnd()){
-    manager.update(*video);
-    window.draw(*video);
+    if(video == NULL && manager.currentState == fade_out) {
+      manager.currentState = switch_state;
+    }
+
+    if(video != NULL) {
+      manager.update(*video);
+      window.draw(*video);
+    }
 
     if(manager.currentState == switch_state) {
       delete decoder;
       delete video;
       video = new entities::Video(manager.nextVideo, window.getWidth(), window.getHeight());
+      decoder = new DecodeThread(video,&manager);
       manager.nextVideo = "";
       manager.currentState = fade_in;
-      decoder = new DecodeThread(video,&manager);
     }
   }
   delete decoder;
@@ -99,12 +111,9 @@ void run(char ** args){
 }
 
 int  main (int argc, char** argv) {
-  if (argc != 2){
-    return EXIT_FAILURE;
-  }
   DEBUG_LOG("Debug Mode Enabled"<<std::endl);
   try {
-    run(argv);
+    run(argc, argv);
   }catch (SDLException& e) {
     std::cerr << e.what() << std::endl;
     return EXIT_FAILURE;

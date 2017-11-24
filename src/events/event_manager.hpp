@@ -15,7 +15,7 @@
 #include "eventListener.hpp"
 #include  "events/SDLEvents.hpp"
 
-enum Video_State {none, fade_in, fade_out, switch_state};
+enum Video_State {none, fade_in, fade_out, switch_state, not_play};
 
 #ifdef ENABLE_MODULES
 typedef struct moduleStruct {
@@ -37,7 +37,7 @@ class  EventManager {
   public:
     EventManager();
     ~EventManager();
-    Video_State currentState = fade_in;
+    Video_State currentState = not_play;
     char* nextVideo = "";
     bool  isEnd() { return quit; }
     //! @brief Update video data and more

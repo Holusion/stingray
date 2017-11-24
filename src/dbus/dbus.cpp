@@ -19,7 +19,7 @@ DBus::DBus(EventManager* manager) {
     return;
   }
 
-  r = sd_bus_add_object_vtable(bus, &slot, "/com/stingray/Process", "com.stingray.Process", stingray_vtable, NULL);
+  r = sd_bus_add_object_vtable(bus, &slot, "/com/stingray/Process", "org.freedesktop.Application", stingray_vtable, NULL);
   if(r < 0) {
     std::cerr << "Failed to issue method call: " << (-r) << std::endl;
     return;
@@ -53,27 +53,36 @@ void DBus::update() {
     }
   }
 }
+int DBus::method_activate(sd_bus_message *m, void *userdata, sd_bus_error *ret_error) {
+  return 0;
+}
+
 
 /**
-  changeVideo -> busctl --user call com.stingray.Process /com/stingray/Process com.stingray.Process VideoState s <path-of-next-video>
+changeVideo -> busctl --user call com.stingray.Process /com/stingray/Process org.freedesktop.Application Open asa{sv} 1 $(pwd)/test/fixtures/rolex.mov 1 desktop-startup-id s truc
 */
-int DBus::method_video_state(sd_bus_message *m, void *userdata, sd_bus_error *ret_error) {
+int DBus::method_open(sd_bus_message *m, void *userdata, sd_bus_error *ret_error) {
   char* videoState;
-  int param;
-  int r = sd_bus_message_read(m, "s", &videoState);
+  int r = sd_bus_message_read(m, "as", 1, &videoState);
   if(r < 0) {
     std::cerr << "Failed to parse parameters: " << (-r) << std::endl;
     return r;
   }
-
-  cerr << "State changed to " << videoState << endl;
+  cout << "Open call :"<< videoState << endl;
   manager->nextVideo = (char*)videoState;
   manager->currentState = fade_out;
-  return sd_bus_reply_method_return(m, "s", videoState) ;
+  std::this_thread::sleep_for(std::chrono::milliseconds(100));
+  return r;
+}
+
+int DBus::method_activate_action(sd_bus_message *m, void *userdata, sd_bus_error *ret_error) {
+  return 0;
 }
 
 const sd_bus_vtable DBus::stingray_vtable[] = {
   vtable::start(0),
-  vtable::method("VideoState", "s", "s", DBus::method_video_state, SD_BUS_VTABLE_UNPRIVILEGED),
+  vtable::method("Activate", "a{sv}", "", method_activate, SD_BUS_VTABLE_UNPRIVILEGED),
+  vtable::method("Open", "asa{sv}", "", method_open, SD_BUS_VTABLE_UNPRIVILEGED),
+  vtable::method("ActivateAction", "sava{sv}", "", method_activate_action, SD_BUS_VTABLE_UNPRIVILEGED),
   vtable::end()
 };
