@@ -9,6 +9,11 @@ using namespace dbus;
 
 EventManager* DBus::manager = NULL;
 
+/**
+This class creates a dbus interface for this application and listen the bus
+to call the function called by the system
+**/
+
 DBus::DBus(EventManager* manager) {
   int r;
   DBus::manager = manager;
@@ -71,7 +76,7 @@ int DBus::method_open(sd_bus_message *m, void *userdata, sd_bus_error *ret_error
   cout << "Open call :"<< videoState << endl;
   manager->nextVideo = (char*)videoState;
   manager->currentState = fade_out;
-  std::this_thread::sleep_for(std::chrono::milliseconds(100));
+  std::this_thread::sleep_for(std::chrono::milliseconds(100)); //FIXME Without this line, the video decoding crash, it's probably a thread safe issue
   return r;
 }
 
@@ -79,6 +84,28 @@ int DBus::method_activate_action(sd_bus_message *m, void *userdata, sd_bus_error
   return 0;
 }
 
+/**
+This vtable is provided by the freedesktop dbus specification at :
+https://standards.freedesktop.org/desktop-entry-spec/latest/ar01s07.html
+
+<interface name='org.freedesktop.Application'>
+  <method name='Activate'>
+    <arg type='a{sv}' name='platform_data' direction='in'/>
+  </method>
+  <method name='Open'>
+    <arg type='as' name='uris' direction='in'/>
+    <arg type='a{sv}' name='platform_data' direction='in'/>
+  </method>
+  <method name='ActivateAction'>
+    <arg type='s' name='action_name' direction='in'/>
+    <arg type='av' name='parameter' direction='in'/>
+    <arg type='a{sv}' name='platform_data' direction='in'/>
+  </method>
+</interface>
+
+We use only the method Open :
+The Open method is called when the application is started with files. The array of strings is an array of URIs, in UTF-8.
+**/
 const sd_bus_vtable DBus::stingray_vtable[] = {
   vtable::start(0),
   vtable::method("Activate", "a{sv}", "", method_activate, SD_BUS_VTABLE_UNPRIVILEGED),

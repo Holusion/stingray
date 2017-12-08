@@ -10,6 +10,7 @@ Video::Video(const char* file,int width,int height) : context(file, width, heigh
 }
 
 Video::~Video(){
+  //Provide memory leaks, the buffer is not completely clean because it crashed when decoder try to decode empty buffer
   for(int i = 1; i < buffer->sizeBackData(); i++) {
     if(buffer->getBackData(i) != nullptr) delete buffer->getBackData(i);
   }
