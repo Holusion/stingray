@@ -19,13 +19,13 @@ DBus::DBus(EventManager* manager) {
     return;
   }
 
-  r = sd_bus_add_object_vtable(bus, &slot, "/com/stingray/Process", "org.freedesktop.Application", stingray_vtable, NULL);
+  r = sd_bus_add_object_vtable(bus, &slot, "/com/stingray", "org.freedesktop.Application", stingray_vtable, NULL);
   if(r < 0) {
     std::cerr << "Failed to issue method call: " << (-r) << std::endl;
     return;
   }
 
-  r = sd_bus_request_name(bus, "com.stingray.Process", 0);
+  r = sd_bus_request_name(bus, "com.stingray", 0);
   if(r < 0) {
     std::cerr << "Failed to aquire service name: " << (-r) << std::endl;
     return;
@@ -59,7 +59,7 @@ int DBus::method_activate(sd_bus_message *m, void *userdata, sd_bus_error *ret_e
 
 
 /**
-changeVideo -> busctl --user call com.stingray.Process /com/stingray/Process org.freedesktop.Application Open asa{sv} 1 $(pwd)/test/fixtures/rolex.mov 1 desktop-startup-id s truc
+changeVideo -> busctl --user call com.stingray /com/stingray org.freedesktop.Application Open asa{sv} 1 $(pwd)/test/fixtures/rolex.mov 1 desktop-startup-id s truc
 */
 int DBus::method_open(sd_bus_message *m, void *userdata, sd_bus_error *ret_error) {
   char* videoState;
