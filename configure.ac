@@ -85,6 +85,14 @@ AS_IF([test "x$enable_autoexit" == "xyes"], [
   AC_DEFINE(ENABLE_AUTOEXIT,[1],[Enable autoexit feature])
 ])
 
+# dbus (Default enable)
+AC_ARG_ENABLE([dbus],
+  AS_HELP_STRING([--disable-dbus], [Disable DBus]))
+
+AS_IF([test "x$enable_dbus" != "xno"], [
+  AC_DEFINE(ENABLE_DBUS,[1],[Enable DBus])
+])
+
 AC_CONFIG_FILES([ Makefile
                   doc/Makefile
                   src/Makefile
