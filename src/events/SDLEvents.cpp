@@ -1,6 +1,6 @@
 #include  "SDLEvents.hpp"
 
-SDLEvents::SDLEvents():quit(false),axis(0) {
+SDLEvents::SDLEvents():quit(false),axis(4) {
   #ifdef ENABLE_MOUSE
   SDL_ShowCursor(SDL_DISABLE);
   SDL_SetRelativeMouseMode(SDL_TRUE);
