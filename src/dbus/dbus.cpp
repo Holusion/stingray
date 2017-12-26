@@ -77,7 +77,12 @@ int DBus::method_open(sd_bus_message *m, void *userdata, sd_bus_error *ret_error
   manager->nextVideo = (char*)videoState;
   manager->currentState = fade_out;
   std::this_thread::sleep_for(std::chrono::milliseconds(100)); //FIXME Without this line, the video decoding crash, it's probably a thread safe issue
-  return r;
+
+  r = sd_bus_reply_method_return(m, NULL);
+  if(r < 0) {
+    std::cerr << "Failed to send reply: " << strerror(-r) << std::endl;
+  }
+  return 0;
 }
 
 int DBus::method_activate_action(sd_bus_message *m, void *userdata, sd_bus_error *ret_error) {
