@@ -50,7 +50,7 @@ void DBus::update() {
     return;
   }
 
-  if(!DBus::manager->isEnd()) {
+  if(!DBus::manager->isEnd() && r == 0) {
     r = sd_bus_wait(bus, (uint64_t) 1);
     if(r < 0) {
       std::cerr << "Failed to wait on bus: " << strerror(-r) << std::endl;
@@ -73,15 +73,16 @@ int DBus::method_open(sd_bus_message *m, void *userdata, sd_bus_error *ret_error
     std::cerr << "Failed to parse parameters: " << strerror(-r) << std::endl;
     return r;
   }
+  r = sd_bus_reply_method_return(m, NULL);
+  if(r < 0) {
+    std::cerr << "Failed to send reply: " << strerror(-r) << std::endl;
+    return r;
+  }
   cout << "Open call :"<< videoState << endl;
   manager->nextVideo = (char*)videoState;
   manager->currentState = fade_out;
   std::this_thread::sleep_for(std::chrono::milliseconds(100)); //FIXME Without this line, the video decoding crash, it's probably a thread safe issue
 
-  r = sd_bus_reply_method_return(m, NULL);
-  if(r < 0) {
-    std::cerr << "Failed to send reply: " << strerror(-r) << std::endl;
-  }
   return 0;
 }
 
