@@ -1,4 +1,11 @@
-stingray (0.2.1) UNRELEASED; urgency=medium
+stingray (0.3.1) UNRELEASED; urgency=medium
+
+  * add dbus support
+  * 
+
+ -- yann <yann@proudhon.holusion.net>  Thu, 14 Dec 2017 11:51:28 +0100
+
+stingray (0.2.1) stable; urgency=medium
 
   * fix some issues following real world tests
   * Update for debian stretch
@@ -7,6 +14,6 @@ stingray (0.2.1) UNRELEASED; urgency=medium
 
 stingray (0.1.0) testing; urgency=medium
 
-  * Initial release. 
+  * Initial release.
 
  -- Sebastien Dumetz <s.dumetz@holusion.com>  Fri, 01 Jul 2016 15:05:53 +0200
