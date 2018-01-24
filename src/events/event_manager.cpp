@@ -1,5 +1,6 @@
 #include  "event_manager.hpp"
 #include  <stdio.h>
+#include  <unistd.h>
 #include  <string.h>
 #include  <errno.h>
 #include  <sys/types.h>
@@ -32,22 +33,37 @@ void EventManager::loadModules(){
   if(lt_dlinit () != 0)
     std::cerr<<"LT_ERROR lt_dltinit : "<<lt_dlerror()<<std::endl;
   /* Set the module search path. */
-  if (lt_dlsetsearchpath ("/etc/stingray/modules.d") != 0) ///home/sebastien/repositories/switch/src/events
-    std::cerr<<"LT_ERROR lt_dlsetsearchpath : "<<lt_dlerror()<<std::endl;
+  char buff[FILENAME_MAX];
+  getcwd( buff, FILENAME_MAX );
+  char* cwd(buff);
+  char* cwd_with_module_dir;
+  cwd_with_module_dir = (char*)malloc(strlen(cwd) + 1 + 9);
+  strcpy(cwd_with_module_dir, cwd);
+  strcat(cwd_with_module_dir, "/modules.d");
+
+  char* moduleDir[2] = {cwd_with_module_dir, "/etc/stingray/modules.d"};
+
+  if (lt_dlsetsearchpath (strstr(cwd_with_module_dir, ":/etc/stingray/modules.d")) != 0) ///home/sebastien/repositories/switch/src/events
+  std::cerr<<"LT_ERROR lt_dlsetsearchpath : "<<lt_dlerror()<<std::endl;
   else{
-    d = opendir("/etc/stingray/modules.d");
-    if (d){
-      while ((dir = readdir(d)) != NULL){
-        if( strstr(dir->d_name,".so")== dir->d_name+strlen(dir->d_name)-3
+    for(int i = 0; i < 2; i++) {
+      std::cout << moduleDir[i] << std::endl;
+      d = opendir(moduleDir[i]);
+      if (d){
+        while ((dir = readdir(d)) != NULL){
+          if( strstr(dir->d_name,".so")== dir->d_name+strlen(dir->d_name)-3
           || strstr(dir->d_name,".la")== dir->d_name+strlen(dir->d_name)-3 ){
-          openModule(dir->d_name);
-        }else{
-          std::cout<<"discarded "<<dir->d_name<<" for modules"<<std::endl;
+            openModule(dir->d_name);
+          }else{
+            std::cout<<"discarded "<<dir->d_name<<" for modules"<<std::endl;
+          }
         }
+        closedir(d);
       }
-      closedir(d);
     }
   }
+  free(cwd_with_module_dir);
+
   modules.shrink_to_fit();
 }
 void EventManager::openModule(char* filename){
