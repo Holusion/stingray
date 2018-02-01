@@ -119,7 +119,7 @@ void  EventManager::update(entities::Video& video) {
   #ifdef ENABLE_AUTOEXIT
   if (axis == lastAxis){
     autoexit_count++;
-    if (autoexit_count > 300){ //update is called on each frame (~60fps)
+    if (autoexit_count > video.size){ //update is called on each frame (~60fps)
       std::cout<<"Automatic exit (Inactive)"<<std::endl;
       quit = true;
     }

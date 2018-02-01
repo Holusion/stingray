@@ -19,6 +19,7 @@ namespace  entities {
       int16_t                  speed;
       DeBuffer<VideoFrame*>*   buffer;
       int                      alpha;
+      int                      size;
 
     public:
       Video(const char* file,int width,int height); //!< Can throw AVException
