@@ -79,9 +79,8 @@ int DBus::method_open(sd_bus_message *m, void *userdata, sd_bus_error *ret_error
     return r;
   }
   cout << "Open call :"<< videoState << endl;
-  manager->nextVideo = (char*)videoState;
+  manager->nextVideo.insert(0, videoState);
   manager->currentState = fade_out;
-  std::this_thread::sleep_for(std::chrono::milliseconds(100)); //FIXME Without this line, the video decoding crash, it's probably a thread safe issue
 
   return 0;
 }

@@ -38,7 +38,7 @@ class  EventManager {
     EventManager();
     ~EventManager();
     Video_State currentState = not_play;
-    char* nextVideo = "";
+    std::string nextVideo = std::string("");
     bool  isEnd() { return quit; }
     //! @brief Update video data and more
     void         update(entities::Video& video);

@@ -104,13 +104,13 @@ void run(int argc, char ** args){
       window.draw(*video);
     }
 
-    if(manager.currentState == switch_state) {
+    if(manager.currentState == switch_state && manager.nextVideo.compare("") != 0) {
       delete decoder;
       delete video;
-      video = new entities::Video(manager.nextVideo, window.getWidth(), window.getHeight());
-      decoder = new DecodeThread(video,&manager);
-      manager.nextVideo = "";
+      video = new entities::Video(manager.nextVideo.c_str(), window.getWidth(), window.getHeight());
+      manager.nextVideo.erase();
       manager.currentState = fade_in;
+      decoder = new DecodeThread(video,&manager);
     }
   }
   delete decoder;
