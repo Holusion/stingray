@@ -95,7 +95,9 @@ void run(int argc, char ** args){
   }
 
   while(!manager.isEnd()){
-    if(video == NULL && manager.currentState == fade_out) {
+    Video_State previousState = manager.currentState;
+
+    if(video == NULL && (previousState == none || previousState == fade_out)) {
       manager.currentState = switch_state;
     }
 
@@ -109,6 +111,8 @@ void run(int argc, char ** args){
       delete video;
       video = new entities::Video(manager.nextVideo.c_str(), window.getWidth(), window.getHeight());
       manager.nextVideo.erase();
+      if(previousState == none)
+        video->alpha = 255;
       manager.currentState = fade_in;
       decoder = new DecodeThread(video,&manager);
     }

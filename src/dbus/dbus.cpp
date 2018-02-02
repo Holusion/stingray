@@ -80,7 +80,10 @@ int DBus::method_open(sd_bus_message *m, void *userdata, sd_bus_error *ret_error
   }
   cout << "Open call :"<< videoState << endl;
   manager->nextVideo.insert(0, videoState);
-  manager->currentState = fade_out;
+  if(manager->currentState == not_play)
+    manager->currentState = none;
+  else
+    manager->currentState = fade_out;
 
   return 0;
 }
