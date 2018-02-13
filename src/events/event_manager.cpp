@@ -142,9 +142,9 @@ void  EventManager::update(entities::Video& video) {
   }
   video.speed = (video.context.fps *std::abs(axis))/4;
 
-  int alphaComputed = 255 * fadeMultiplier;
+  float alphaComputed = 255 * fadeMultiplier;
   if(video.speed > 0) alphaComputed /= video.speed;
-  if(alphaComputed == 0) alphaComputed = 1;
+  else alphaComputed = 255 * 0.007;
 
   if(currentState == in) {
     fadeIn(video, alphaComputed);
