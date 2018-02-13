@@ -15,7 +15,7 @@
 #include "eventListener.hpp"
 #include  "events/SDLEvents.hpp"
 
-enum Video_State {none, fade_in, fade_out, switch_state, not_play};
+enum Video_State {none, in, out, switch_state, not_play};
 
 #ifdef ENABLE_MODULES
 typedef struct moduleStruct {
@@ -33,7 +33,7 @@ class  EventManager {
     bool            quit; //!< Boolean which decide if the program run or not
     SDLEvents    events;
     std::vector<struct moduleStruct> modules;
-    float fadeMultiplier = 0.007f;
+    float fadeMultiplier = 0.5f;
   public:
     EventManager();
     ~EventManager();
@@ -54,7 +54,7 @@ class  EventManager {
     #endif
 
   private:
-    void fadeIn(entities::Video& video);
-    void fadeOut(entities::Video& video);
+    void fadeIn(entities::Video& video, int delta);
+    void fadeOut(entities::Video& video, int delta);
 };
 #endif

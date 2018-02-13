@@ -91,13 +91,13 @@ void run(int argc, char ** args){
   if(argc == 2) {
     video = new entities::Video(args[1],window.getWidth(),window.getHeight());
     decoder = new DecodeThread(video,&manager);
-    manager.currentState = fade_in;
+    manager.currentState = in;
   }
 
   while(!manager.isEnd()){
     Video_State previousState = manager.currentState;
 
-    if(video == NULL && (previousState == none || previousState == fade_out)) {
+    if(video == NULL && (previousState == none || previousState == out)) {
       manager.currentState = switch_state;
     }
 
@@ -113,7 +113,7 @@ void run(int argc, char ** args){
       manager.nextVideo.erase();
       if(previousState == none)
         video->alpha = 255;
-      manager.currentState = fade_in;
+      manager.currentState = in;
       decoder = new DecodeThread(video,&manager);
     }
   }

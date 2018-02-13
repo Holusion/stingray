@@ -81,10 +81,11 @@ int DBus::method_open(sd_bus_message *m, void *userdata, sd_bus_error *ret_error
   if(manager->nextVideo.compare("") == 0) {
     cout << "Open call :"<< videoState << endl;
     manager->nextVideo.insert(0, videoState);
-    if(manager->currentState == not_play)
-    manager->currentState = none;
+    if(manager->currentState == not_play) {
+      manager->currentState = none;
+    }
     else
-    manager->currentState = fade_out;
+      manager->currentState = out;
   }
 
   return 0;
