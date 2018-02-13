@@ -96,7 +96,7 @@ void  Window::draw(entities::Video& video) {
     SDL_Delay(waitingTime);
   }
 
-  if ((video.buffer->size() > 0 && !video.pause)) {
+  if ((video.buffer->size() > 0 && !video.pause) || (video.buffer->size() > 0 && video.pause && video.alpha <= 10)) {
     frame = video.buffer->forward()->frame();
     lastFrame = frame;
   }else{
