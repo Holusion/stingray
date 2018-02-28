@@ -17,7 +17,7 @@ Window::Window() {
   int display_count = 0, display_index = 0, mode_index = 0;
   if ((display_count = SDL_GetNumVideoDisplays()) < 1) {
     throw SDLException("SDL_GetNumVideoDisplays");
-  }else if (SDL_GetDisplayMode(display_index, mode_index, &mode) != 0) {
+  }else if (SDL_GetCurrentDisplayMode(display_index, &mode) != 0) {
     throw SDLException("SDL_GetDisplayMode failed");
   }
   SDL_Log("SDL_GetDisplayMode(0, 0, &mode):\t\t%i bpp\t%i x %i",SDL_BITSPERPIXEL(mode.format), mode.w, mode.h);
