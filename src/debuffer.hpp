@@ -6,6 +6,7 @@
 #include  <mutex>
 
 #include "constants.h"
+#include "../config.h"
 using namespace std;
 //! @namespace  memory
 //! @brief Memory namespace

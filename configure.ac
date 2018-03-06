@@ -93,6 +93,14 @@ AS_IF([test "x$enable_dbus" != "xno"], [
   AC_DEFINE(ENABLE_DBUS,[1],[Enable DBus])
 ])
 
+AC_ARG_ENABLE([capacity],
+    AS_HELP_STRING([--enable-capacity], [Set the capacity]))
+AS_IF([test "$enable_capacity"], [
+  AC_DEFINE_UNQUOTED(CAPACITY, $enable_capacity, [Set capacity])
+], [
+  AC_DEFINE_UNQUOTED(CAPACITY, 256, [Set capacity])
+])
+
 AC_CONFIG_FILES([ Makefile
                   doc/Makefile
                   src/Makefile
