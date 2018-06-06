@@ -22,10 +22,16 @@ namespace  core {
       AVFrame*              lastFrame;
       int            m_width, m_height;
       FrameTimer timer;
+      float fadeMultiplier = 0.005;
+      int targetTime;
+      int currentTime;
     public:
       Window();
       ~Window();
 
+    private:
+      void fadeIn(entities::Video& video, int delta);
+      void fadeOut(entities::Video& video, int delta);
     public:
       int  getWidth() { return m_width; }
       int  getHeight() { return m_height; }

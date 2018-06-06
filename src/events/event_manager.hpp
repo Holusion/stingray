@@ -15,7 +15,7 @@
 #include "eventListener.hpp"
 #include  "events/SDLEvents.hpp"
 
-enum Video_State {none, in, out, switch_state, not_play};
+// enum Video_State {none, in, out, switch_state, not_play};
 
 #ifdef ENABLE_MODULES
 typedef struct moduleStruct {
@@ -31,18 +31,20 @@ class  EventManager {
 
   private:
     bool            quit; //!< Boolean which decide if the program run or not
+    bool            changeReceived;
     SDLEvents    events;
     std::vector<struct moduleStruct> modules;
     float fadeMultiplier = 0.5f;
   public:
     EventManager();
     ~EventManager();
-    Video_State currentState = not_play;
+    // Video_State currentState = not_play;
     std::string nextVideo = std::string("");
     bool  isEnd() { return quit; }
     //! @brief Update video data and more
     void         update(entities::Video& video);
     void exit(){ quit = true; };
+    void changeVideoState();
     #ifdef ENABLE_MODULES
     void loadModules();
     void openModule(char* filename);
@@ -54,7 +56,7 @@ class  EventManager {
     #endif
 
   private:
-    void fadeIn(entities::Video& video, int delta);
-    void fadeOut(entities::Video& video, int delta);
+    // void fadeIn(entities::Video& video, int delta);
+    // void fadeOut(entities::Video& video, int delta);
 };
 #endif

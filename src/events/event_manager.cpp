@@ -142,33 +142,18 @@ void  EventManager::update(entities::Video& video) {
   }
   video.speed = (video.context.fps *std::abs(axis))/4;
 
-  float alphaComputed = 255 * fadeMultiplier;
-  if(video.speed > 0) alphaComputed /= video.speed;
-  else alphaComputed = 255 * 0.007;
-
-  if(currentState == in) {
-    fadeIn(video, alphaComputed);
-  } else if(currentState == out) {
-    fadeOut(video, alphaComputed);
-  } else
-    video.alpha = 255;
-}
-
-void EventManager::fadeIn(entities::Video& video, int delta) {
-  if(video.alpha >= 255) {
-    video.alpha = 255;
-    currentState = none;
-  } else
-    video.alpha += delta;
-}
-
-void EventManager::fadeOut(entities::Video& video, int delta) {
-  if(video.alpha <= 0) {
-    video.alpha = 0;
-    currentState = switch_state;
+  if(changeReceived) {
+    if(video.state == entities::not_play) {
+      video.state = entities::none;
+    }
+    else
+      video.state = entities::out;
+    changeReceived = false;
   }
-  else
-    video.alpha -= delta;
+}
+
+void EventManager::changeVideoState() {
+  changeReceived = true;
 }
 /* Copyright (C) 2016 Sebastien DUMETZ
  * This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.

@@ -50,3 +50,8 @@ Makefile.in
 /stamp-h1
 /build-aux
 /libtool
+
+# Visual Studio code
+.vscode
+data/com.stingray.desktop
+data/com.stingray.service

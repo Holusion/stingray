@@ -7,6 +7,7 @@ Video::Video(const char* file,int width,int height) : context(file, width, heigh
                                  speed(this->context.fps),
                                  buffer(new DeBuffer<VideoFrame*>(context.nbFrames)),
                                  alpha(0),
+                                 state(not_play),
                                  size(context.nbFrames) {
 }
 

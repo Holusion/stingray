@@ -9,6 +9,7 @@
 //! @brief Data namespace
 namespace  entities {
 
+  enum Video_State {none, in, out, switch_state, not_play};
   //! @class Video
   //! @brief Contain all data to play a video
   class Video {
@@ -19,6 +20,7 @@ namespace  entities {
       int16_t                  speed;
       DeBuffer<VideoFrame*>*   buffer;
       int                      alpha;
+      Video_State              state;
       int                      size;
 
     public:

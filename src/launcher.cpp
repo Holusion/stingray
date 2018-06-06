@@ -35,7 +35,7 @@ public:
     decoder::VideoDecoder decoder(video->context);
 
     try {
-      while(!manager->isEnd() && manager->currentState != switch_state && manager->currentState != not_play){
+      while(!manager->isEnd() && video->state != entities::switch_state && video->state != entities::not_play){
         //std::this_thread::sleep_for(std::chrono::milliseconds(100)); //FIXME try something else, the old sleep was bad (100% cpu here)
         if(video->buffer->size() + DECODE_SIZE < video->buffer->limit()){
           blocked = false;
@@ -82,8 +82,8 @@ void run(int argc, char ** args){
   core::Window  window;
   EventManager   manager;
   #ifdef ENABLE_DBUS
-  dbus::DBus    bus(&manager);
-  DBusThread            *listener = new DBusThread(&bus, &manager);
+    dbus::DBus    bus(&manager);
+    DBusThread            *listener = new DBusThread(&bus, &manager);
   #endif
   entities::Video* video = NULL;
   DecodeThread          *decoder = NULL;
@@ -91,29 +91,41 @@ void run(int argc, char ** args){
   if(argc == 2) {
     video = new entities::Video(args[1],window.getWidth(),window.getHeight());
     decoder = new DecodeThread(video,&manager);
-    manager.currentState = in;
+    video->state = in;
   }
 
   while(!manager.isEnd()){
-    Video_State previousState = manager.currentState;
-
-    if(video == NULL && (previousState == none || previousState == out)) {
-      manager.currentState = switch_state;
+    Video_State previousState;
+    if(video == NULL) {
+      previousState = entities::none;
+    } else {
+      previousState = video->state;
     }
 
+    // if(video == NULL && (previousState == none || previousState == out)) {
+    //   video = new entities::Video(manager.nextVideo.c_str(), window.getWidth(), window.getHeight());
+    //   video->state = switch_state;
+    // }
+
     if(video != NULL) {
+      if(manager.nextVideo.compare("") != 0) {
+        manager.changeVideoState();
+      }
       manager.update(*video);
       window.draw(*video);
     }
 
-    if(manager.currentState == switch_state && manager.nextVideo.compare("") != 0) {
+    if((video == NULL || video->state == switch_state) && manager.nextVideo.compare("") != 0) {
       delete decoder;
-      delete video;
+      if(video != NULL) {
+        delete video;
+      }
       video = new entities::Video(manager.nextVideo.c_str(), window.getWidth(), window.getHeight());
       manager.nextVideo.erase();
-      if(previousState == none)
+      if(previousState == none) {
         video->alpha = 255;
-      manager.currentState = in;
+      }
+      video->state = in;
       decoder = new DecodeThread(video,&manager);
     }
   }

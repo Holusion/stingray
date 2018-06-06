@@ -3,6 +3,7 @@
 
 #include "vtable.hpp"
 #include  "events/event_manager.hpp"
+#include "video.hpp"
 
 namespace dbus {
   class DBus {

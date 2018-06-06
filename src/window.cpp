@@ -89,18 +89,36 @@ void  Window::draw(entities::Video& video) {
     }
     video.buffer->forward();
   }
+  
+  if(video.state == entities::in && video.buffer->size() > 0) {
+    fadeIn(video, 255 * fadeMultiplier);
+  } else if(video.state == entities::out && video.buffer->size() > 0) {
+    fadeOut(video, 255 * fadeMultiplier);
+  }
   waitingTime = timer.getWaitingTime(SDL_GetTicks());
   if(waitingTime == 0){
     DEBUG_LOG("Display too slow"<<std::endl);
   }else{
-    SDL_Delay(waitingTime);
+    SDL_Delay(1.0);
   }
 
-  if ((video.buffer->size() > 0 && !video.pause) || (video.buffer->size() > 0 && video.pause && video.alpha <= 10)) {
+  if(targetTime - currentTime > 0) {
+    frame = lastFrame;
+    if(video.buffer->size() && video.pause && video.state == entities::in && video.alpha <= 1) {
+      frame = video.buffer->forward()->frame();
+      lastFrame = frame;
+    } else {
+      currentTime += SDL_GetTicks() * (video.speed / 25.0); // 25 FPS
+    }
+  } else if ((video.buffer->size() > 0 && !video.pause)) {
     frame = video.buffer->forward()->frame();
     lastFrame = frame;
+    currentTime = 0;
+    targetTime = currentTime + waitingTime;
   }else{
     frame = lastFrame;
+    currentTime = 0;
+    targetTime = currentTime + waitingTime;
   }
   //! Draw
   SDL_RenderClear(m_renderer);
@@ -120,4 +138,21 @@ void  Window::draw(entities::Video& video) {
   SDL_RenderCopy(m_renderer, m_displayFrame, &position, &position);
   SDL_RenderPresent(m_renderer);
 
+}
+
+void Window::fadeIn(entities::Video& video, int delta) {
+  if(video.alpha >= 255) {
+    video.alpha = 255;
+    video.state = entities::none;
+  } else
+    video.alpha += delta;
+}
+
+void Window::fadeOut(entities::Video& video, int delta) {
+  if(video.alpha <= 0) {
+    video.alpha = 0;
+    video.state = entities::switch_state;
+  }
+  else
+    video.alpha -= delta;
 }
