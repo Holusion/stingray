@@ -2,14 +2,16 @@
 
 using namespace entities;
 
-Video::Video(const char* file,int width,int height) : context(file, width, height),
-                                 pause(false),
-                                 speed(this->context.fps),
-                                 buffer(new DeBuffer<VideoFrame*>(context.nbFrames)),
-                                 alpha(0),
-                                 state(not_play),
-                                 size(context.nbFrames) {
-}
+Video::Video(const char* file, int width, int height, std::size_t start_frame_number): 
+  context(file, width, height),
+  pause(false),
+  speed(this->context.fps),
+  //FIXME does inherit parent's position but not its direction...
+  buffer(new DeBuffer<VideoFrame*>(context.nbFrames, Direction::NORMAL, start_frame_number)),
+  alpha(0),
+  state(not_play),
+  size(context.nbFrames) 
+  {}
 
 Video::~Video(){
   //Provide memory leaks, the buffer is not completely clean because it crashed when decoder try to decode empty buffer

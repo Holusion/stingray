@@ -28,6 +28,7 @@ TEST_F(FrameTimerTests, Calculate_Waiting_Time_High_Framerates) {
   timer.update(33);
   ASSERT_EQ(0,timer.getWaitingTime(66)); //return 0 while on sync
 }
+/* DIsabled : too empirical
 TEST_F(FrameTimerTests, Calculate_Skip_Frames) {
   FrameTimer timer;
   timer.setTargetSpeed(25);
@@ -39,3 +40,4 @@ TEST_F(FrameTimerTests, Calculate_Skip_Frames) {
   timer.setTargetSpeed(120);
   ASSERT_EQ(3,timer.getSkipCount()); //skip 3 frames at 120fps
 }
+*/

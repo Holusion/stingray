@@ -24,7 +24,7 @@ namespace  entities {
       int                      size;
 
     public:
-      Video(const char* file,int width,int height); //!< Can throw AVException
+      Video(const char* file,int width,int height, std::size_t start_frame_number = 0); //!< Can throw AVException
       ~Video();
   };
 }

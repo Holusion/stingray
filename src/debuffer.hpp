@@ -22,7 +22,7 @@ template <class T> class  DeBuffer {
   protected:
 
     std::mutex         m;
-    unsigned int       current;
+    std::size_t       current;
     const unsigned int count; //to know when we should round up
     buffer_t           data; //Is swapped when direction changes
     buffer_t           backData; // always contain data of !direction.
@@ -30,9 +30,9 @@ template <class T> class  DeBuffer {
     const std::size_t  maxSize;
   public:
     //size parameter stands for "total video size" as in "count of frames"
-    DeBuffer<T>(const std::size_t size, Direction d=Direction::NORMAL) :
+    DeBuffer<T>(const std::size_t size, Direction d=Direction::NORMAL, std::size_t current=0) :
                                     m(),
-                                    current(0),
+                                    current(current % size),
                                     count(size),
                                     data(),
                                     backData(),
@@ -45,7 +45,7 @@ template <class T> class  DeBuffer {
     std::size_t sizeBackData() const{return backData.size();}
     std::size_t limit() const { return maxSize; }
     Direction   direction() const {return d; }
-    unsigned int index() const {return current;}
+    std::size_t index() const {return current;}
     void  swap();
     bool write(T item, Direction d);
     bool write(T item);

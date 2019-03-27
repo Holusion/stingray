@@ -47,9 +47,9 @@ DecoderContext::DecoderContext(const char* file,int width,int height) {
   if (this->codecCtx->hwaccel != NULL){
     std::cout<<"Using hardware acceleration"<<std::endl;
   }
-  this->nextFrame = 0;
   this->fps = getFps();
   this->nbFrames = videoSize();
+  this->nextFrame = 0;
   this->width = width;
   this->height = height;
   this->timeBase = av_q2d(this->formatCtx->streams[this->streamIndex]->time_base);

@@ -20,3 +20,11 @@ TEST_F(DeBufferTests, ForwardIndexReverse) {
   }
   ASSERT_EQ(0,buf.index());
 }
+TEST_F(DeBufferTests, InitialIndex) {
+  DeBuffer<int> buf(10, Direction::NORMAL, 2);
+  ASSERT_EQ(2,buf.index()); //Always start at 0
+}
+TEST_F(DeBufferTests, InitialIndexLargerThanSize) {
+  DeBuffer<int> buf(10, Direction::NORMAL, 15);
+  ASSERT_EQ(5,buf.index()); //Always start at 0
+}

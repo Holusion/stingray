@@ -60,27 +60,27 @@ AC_TYPE_UINT32_T
 # Checks for library functions.
 AC_CHECK_FUNCS([floor strerror])
 
-# Optional functionalities
+###                       ###
+# Optional functionalities  #
+###                       ###
+
 # modules are default enabled
 AC_ARG_ENABLE([modules],
     AS_HELP_STRING([--disable-modules], [Disable dynamic modules loading]))
-
 AS_IF([test "x$enable_modules" != "xno"], [
   AC_DEFINE(ENABLE_MODULES,[1],[Enable dynamic modules loading])
 ])
+
 # mouse control is default disabled
 AC_ARG_ENABLE([mouse],
     AS_HELP_STRING([--enable-mouse], [Enable mouse control]))
-
 AS_IF([test "x$enable_mouse" == "xyes"], [
   AC_DEFINE(ENABLE_MOUSE,[1],[Enable mouse control])
 ])
 
-# autoexit (Default Disabled)
-#Exit stingray after some seconds of inactivity
+# autoexit (Default Disabled) - Exit stingray after some seconds of inactivity
 AC_ARG_ENABLE([autoexit],
     AS_HELP_STRING([--enable-autoexit], [Enable autoexit feature]))
-
 AS_IF([test "x$enable_autoexit" == "xyes"], [
   AC_DEFINE(ENABLE_AUTOEXIT,[1],[Enable autoexit feature])
 ])
@@ -88,17 +88,24 @@ AS_IF([test "x$enable_autoexit" == "xyes"], [
 # dbus (Default enable)
 AC_ARG_ENABLE([dbus],
   AS_HELP_STRING([--disable-dbus], [Disable DBus]))
-
 AS_IF([test "x$enable_dbus" != "xno"], [
   AC_DEFINE(ENABLE_DBUS,[1],[Enable DBus])
 ])
 
+# Configure buffer capacity
 AC_ARG_ENABLE([capacity],
     AS_HELP_STRING([--enable-capacity], [Set the capacity]))
 AS_IF([test "$enable_capacity"], [
   AC_DEFINE_UNQUOTED(CAPACITY, $enable_capacity, [Set capacity])
 ], [
   AC_DEFINE_UNQUOTED(CAPACITY, 256, [Set capacity])
+])
+
+# allow stingray to auto-start video at last known frame number
+AC_ARG_ENABLE([seamless],
+    AS_HELP_STRING([--enable-seamless], [Enable seamless video loop from dbus Open Action]))
+AS_IF([test "x$enable_seamless" == "xyes"], [
+  AC_DEFINE(ENABLE_SEAMLESS,[1],[Enable seamless video loop from dbus Open Action])
 ])
 
 AC_CONFIG_FILES([ Makefile

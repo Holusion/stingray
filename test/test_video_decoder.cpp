@@ -2,7 +2,7 @@
 #include  <cmath>
 
 namespace  decoder {
-
+  //FIXME pretty sure all av_frame_alloc() here are memory leaks...
 
   TEST_F(VideoDecoderTest, NextFrame) {
 
@@ -14,12 +14,11 @@ namespace  decoder {
       ASSERT_EQ(i, getFrameNumber(*frame));
     }
   }
-
   //
   // Decode the video one time in normal mode
   //
   TEST_F(VideoDecoderTest, Decode_Normal) {
-
+    AVFrame* frame = av_frame_alloc();
     ASSERT_NO_THROW(m_decoder.decode(0));
 
     for (unsigned int i = 0; i < DECODE_SIZE; i++) {
@@ -59,20 +58,4 @@ namespace  decoder {
       EXPECT_EQ((count++) % 20, getFrameNumber(*frame));
     }
   }
-
-  TEST_F(VideoDecoderTest, Decode_And_Write) {
-
-    entities::VideoBuffer  buffer(20);
-
-    ASSERT_NO_THROW(m_decoder.decodeAndWrite(buffer));
-
-    for (int i = 0; i < 10; i++) {
-
-      const AVFrame* frame = buffer.read()->frame();
-
-      expectValidFrame(*frame);
-      EXPECT_EQ(i, getFrameNumber(*frame));
-    }
-  }
-
 }

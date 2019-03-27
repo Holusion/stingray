@@ -92,7 +92,7 @@ int DBus::method_activate_action(sd_bus_message *m, void *userdata, sd_bus_error
 
 /**
 This vtable is provided by the freedesktop dbus specification at :
-https://standards.freedesktop.org/desktop-entry-spec/latest/ar01s07.html
+https://standards.freedesktop.org/desktop-entry-spec/latest/ar01s08.html
 
 <interface name='org.freedesktop.Application'>
   <method name='Activate'>
@@ -109,8 +109,9 @@ https://standards.freedesktop.org/desktop-entry-spec/latest/ar01s07.html
   </method>
 </interface>
 
-We use only the method Open :
-The Open method is called when the application is started with files. The array of strings is an array of URIs, in UTF-8.
+ - Activate : start the app without any file (does nothing beyond initalization)
+ - Open : start the app with file(s) to opan. The array of strings is an array of URIs, in UTF-8.
+ - ActivateAction : Custom actions as defined in the spec (https://standards.freedesktop.org/desktop-entry-spec/latest/ar01s11.html)
 **/
 const sd_bus_vtable DBus::stingray_vtable[] = {
   vtable::start(0),

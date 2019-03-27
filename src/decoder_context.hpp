@@ -21,7 +21,7 @@ namespace decoder{
       static const constexpr double    EPS_ZERO = 0.000025;
 
     public:
-      unsigned int      nextFrame; //!< Next frame that will get out of decoder
+      std::size_t      nextFrame; //!< Next frame that will get out of decoder
       std::size_t       nbFrames;
       double            fps;
       double            timeBase;

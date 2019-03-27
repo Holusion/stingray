@@ -53,6 +53,7 @@ namespace  decoder {
       FRIEND_TEST(VideoDecoderTest, Decode_Index);
       FRIEND_TEST(VideoDecoderTest, Decode_EOF);
       FRIEND_TEST(VideoDecoderTest, NextFrame);
+      FRIEND_TEST(VideoDecoderTest, StartFrameNumber);
 #endif
 
     public:

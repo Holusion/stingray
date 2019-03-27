@@ -117,10 +117,19 @@ void run(int argc, char ** args){
 
     if((video == NULL || video->state == switch_state) && manager.nextVideo.compare("") != 0) {
       delete decoder;
+      std::size_t next_frame_number = 0;
       if(video != NULL) {
+        next_frame_number = video->buffer->index();
         delete video;
       }
-      video = new entities::Video(manager.nextVideo.c_str(), window.getWidth(), window.getHeight());
+      //Switch to a new video
+      #ifdef ENABLE_SEAMLESS
+        std::cout << "Start video from frame :" << next_frame_number <<std::endl;
+        video = new entities::Video(manager.nextVideo.c_str(), window.getWidth(), window.getHeight(), next_frame_number);
+      #else
+        video = new entities::Video(manager.nextVideo.c_str(), window.getWidth(), window.getHeight());
+      #endif
+      
       manager.nextVideo.erase();
       if(previousState == none) {
         video->alpha = 255;
