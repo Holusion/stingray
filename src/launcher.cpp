@@ -16,133 +16,65 @@
 
 using namespace  std::chrono;
 using namespace  entities;
-#ifdef ENABLE_DBUS
-using namespace  dbus;
-#endif
 
-class DecodeThread{
-public:
-  std::thread th;
-  DecodeThread(entities::Video* v,EventManager* m):
-    th(DecodeThread::decode_loop, v, m) { }
-  ~DecodeThread(){
-    //thread is auto-stopped by manager
-    //We just need to join().
-    th.join();
-  }
-  static void decode_loop (entities::Video* video,EventManager* manager){
-    bool blocked = false;
-    decoder::VideoDecoder decoder(video->context);
 
-    try {
-      while(!manager->isEnd() && video->state != entities::switch_state && video->state != entities::not_play){
-        //std::this_thread::sleep_for(std::chrono::milliseconds(100)); //FIXME try something else, the old sleep was bad (100% cpu here)
-        if(video->buffer->size() + DECODE_SIZE < video->buffer->limit()){
-          blocked = false;
-          decoder.decodeAndWrite(*video->buffer);
-        }else{ //Don't even decode if the buffer is nearly full.
-          if (!blocked){
-            DEBUG_LOG("Blocking : Buffer is full"<<std::endl);
-            std::this_thread::sleep_for(std::chrono::milliseconds(10));
-          }else{
-            std::this_thread::sleep_for(std::chrono::milliseconds(40));
-          }
-          blocked = true;
-        }
-      }
-    }catch (AVException& e){
-      std::cerr <<"Decode Thread -> AV Exception : "<< e.what() <<std::endl;
-    }catch (GlobalException& e) {
-      std::cerr << "Decode Thread -> " << e.what() << std::endl;
-    }
-  }
-};
 
-#ifdef ENABLE_DBUS
-class DBusThread {
-public:
-  std::thread th;
-
-  DBusThread(dbus::DBus* bus, EventManager* manager):
-    th(DBusThread::listen_loop, bus, manager) {}
-
-  ~DBusThread() {
-    th.join();
-  }
-
-  static void listen_loop(dbus::DBus* bus, EventManager* manager) {
-    while(!manager->isEnd()) {
-      bus->update();
-    }
-  }
-};
-#endif
 
 void run(int argc, char ** args){
-  core::Window  window;
+  core::Display display; //SDL init / teardown
   EventManager   manager;
+  std::shared_ptr<Video> video;
   #ifdef ENABLE_DBUS
+    //FIXME if it already exists on bus, call an Open action instead of starting a new window
     dbus::DBus    bus(&manager);
-    DBusThread            *listener = new DBusThread(&bus, &manager);
   #endif
-  entities::Video* video = NULL;
-  DecodeThread          *decoder = NULL;
-
+  DEBUG_LOG("Initialization complete"<<std::endl);
   if(argc == 2) {
-    video = new entities::Video(args[1],window.getWidth(),window.getHeight());
-    decoder = new DecodeThread(video,&manager);
-    video->state = in;
+    DEBUG_LOG("Openning : "<<args[1]<<std::endl);
+    video = std::make_shared<Video>(args[1],display.getWidth(),display.getHeight(), 0);
+    display.setSource(video);
+    video.reset();
   }
+  state_t s = manager.update();
+  while(!s.quit){
+    s = manager.update();
+    std::string next_video = bus.pop_play_next();
+    if(next_video != ""){
+      std::cout<<"Next video : "<<next_video<<std::endl;
+      #ifdef ENABLE_SEAMLESS
+        video = display.getSource();
+        video = std::make_shared<Video>(next_video.c_str(), display.getWidth(), display.getHeight(), video->buffer.index());
+      #else
+        video = std::make_shared<Video>(next_video.c_str(), display.getWidth(), display.getHeight(), 0);
+      #endif
+      display.setSource(video);
+      video.reset();
+    } //*/
 
-  while(!manager.isEnd()){
-    Video_State previousState;
-    if(video == NULL) {
-      previousState = entities::none;
-    } else {
-      previousState = video->state;
+    video = display.getSource();
+    if(video){
+      video->pause = (s.axis == 0) ? true : false;
+      video->speed = (video->context.fps *std::abs(s.axis))/4;
+      if ( (s.axis < 0  && video->buffer.direction() == Direction::NORMAL)
+          || (0 < s.axis  && video->buffer.direction() == Direction::REVERSE)) {
+
+        video->buffer.swap();
+      }
     }
-
-    // if(video == NULL && (previousState == none || previousState == out)) {
-    //   video = new entities::Video(manager.nextVideo.c_str(), window.getWidth(), window.getHeight());
-    //   video->state = switch_state;
-    // }
-
+    
+    display.draw();
+    //*/
+    /*
     if(video != NULL) {
       if(manager.nextVideo.compare("") != 0) {
         manager.changeVideoState();
       }
       manager.update(*video);
-      window.draw(*video);
+    }else{
+      manager.update();
     }
-
-    if((video == NULL || video->state == switch_state) && manager.nextVideo.compare("") != 0) {
-      delete decoder;
-      std::size_t next_frame_number = 0;
-      if(video != NULL) {
-        next_frame_number = video->buffer->index();
-        delete video;
-      }
-      //Switch to a new video
-      #ifdef ENABLE_SEAMLESS
-        std::cout << "Start video from frame :" << next_frame_number <<std::endl;
-        video = new entities::Video(manager.nextVideo.c_str(), window.getWidth(), window.getHeight(), next_frame_number);
-      #else
-        video = new entities::Video(manager.nextVideo.c_str(), window.getWidth(), window.getHeight());
-      #endif
-      
-      manager.nextVideo.erase();
-      if(previousState == none) {
-        video->alpha = 255;
-      }
-      video->state = in;
-      decoder = new DecodeThread(video,&manager);
-    }
+    //*/
   }
-  delete decoder;
-  #ifdef ENABLE_DBUS
-  delete listener;
-  #endif
-  delete video;
 }
 
 int  main (int argc, char** argv) {

@@ -5,22 +5,94 @@ using namespace  std::chrono;
 using namespace  core;
 
 
-
-Window::Window() {
+Display::Display(){
   if(SDL_Init(SDL_INIT_VIDEO))
     throw SDLException("Could not initialize SDL");
 
-
   SDL_GL_SetAttribute( SDL_GL_CONTEXT_MAJOR_VERSION, 3);
   SDL_GL_SetAttribute( SDL_GL_CONTEXT_MINOR_VERSION, 1 );
+
+}
+
+Display::~Display(){
+  std::cout<<"SDL quit"<<std::endl;
+  SDL_Quit();
+}
+
+SDL_DisplayMode Display::getMode(){
   SDL_DisplayMode  mode;
-  int display_count = 0, display_index = 0, mode_index = 0;
-  if ((display_count = SDL_GetNumVideoDisplays()) < 1) {
+  int display_count;
+    if ((display_count = SDL_GetNumVideoDisplays()) < 1) {
     throw SDLException("SDL_GetNumVideoDisplays");
-  }else if (SDL_GetCurrentDisplayMode(display_index, &mode) != 0) {
+  }else if (SDL_GetCurrentDisplayMode(0, &mode) != 0) {
     throw SDLException("SDL_GetDisplayMode failed");
   }
   SDL_Log("SDL_GetDisplayMode(0, 0, &mode):\t\t%i bpp\t%i x %i",SDL_BITSPERPIXEL(mode.format), mode.w, mode.h);
+  return mode;
+}
+
+int  Display::getWidth() {
+  return getMode().w;
+}
+
+int  Display::getHeight() {
+  return getMode().h;
+}
+
+bool Display::active(){
+  return currentSrc || nextSrc; //Force to bool
+}
+
+void Display::draw(){
+  if(!active()){
+    win.reset();
+    return;
+  }else if(!win && active()){
+    win = std::unique_ptr<Window>(new Window(getMode()));
+  }
+  win->clear();
+  #ifdef ENABLE_CROSSFADE
+ 
+  if( this->nextSrc){
+    if (0 == this->currentSrc->alpha || UINT8_MAX == this->nextSrc->alpha){
+      this->currentSrc = this->nextSrc;
+      this->nextSrc.reset();
+    }else{
+      this->currentSrc->alpha_sub(CROSSFADE_SPEED);
+      //this->nextSrc->alpha_add(CROSSFADE_SPEED);
+      //win->draw(*this->nextSrc, true);
+    }
+  }else if ( this->currentSrc->alpha < UINT8_MAX){
+    this->currentSrc->alpha_add(CROSSFADE_SPEED);
+  }
+  win->draw(*this->currentSrc);
+  #endif
+  win->present();
+}
+
+void Display::setSource(std::shared_ptr<entities::Video>& new_source){
+  #ifdef ENABLE_CROSSFADE
+    if(this->currentSrc){
+      this->nextSrc = new_source; //Reference the new source so it won't get deleted
+    }else{
+      this->currentSrc = new_source;
+    }
+  #else
+    this->currentSrc = new_source;
+  #endif
+}
+
+
+
+std::shared_ptr<entities::Video> Display::getSource(){
+  return std::shared_ptr<entities::Video>(this->currentSrc);
+}
+
+
+
+Window::Window(SDL_DisplayMode  mode) :currentTime(0){
+  int display_count = 0, display_index = 0, mode_index = 0;
+  
   //GetDesktopDisplayMode is relying on RandR extension, disabled by Xinerama
   //SDL_GetDesktopDisplayMode(0, &mode);
   std::cout<<"Detected desktop resolution : "<<mode.w<<"x"<<mode.h<<std::endl;
@@ -41,15 +113,20 @@ Window::Window() {
       SDL_RENDERER_ACCELERATED);
   if (m_renderer == NULL)
     throw SDLException( "SDL_CreateRenderer");
-  SDL_SetRenderDrawColor(m_renderer, 0, 0, 0, 0);
+  //SDL_SetRenderDrawBlendMode(m_renderer, SDL_BLENDMODE_ADD);
+  SDL_SetRenderDrawColor(m_renderer, 0x0, 0x0, 0x0, 0x0);
   SDL_GetWindowSize(m_window, &m_width, &m_height);
-
-  m_displayFrame = SDL_CreateTexture(m_renderer,
+  position = SDL_Rect{0, 0, m_width, m_height};
+  texture = SDL_CreateTexture(m_renderer,
       SDL_PIXELFORMAT_YV12,
       SDL_TEXTUREACCESS_STREAMING,
       m_width,
       m_height);
-
+  if(texture == NULL){
+    throw SDLException(SDL_GetError());
+  }
+  SDL_SetTextureBlendMode(texture, SDL_BLENDMODE_BLEND);
+  
   /* Create black frame */
   lastFrame = av_frame_alloc();
   lastFrame->width = getWidth();
@@ -67,51 +144,74 @@ Window::Window() {
       lastFrame->data[2][(j / 2 * lastFrame->linesize[2]) + x / 2] = 128;
     }
   }
+  draw(lastFrame,255);
 }
 
 Window::~Window() {
-  std::cout<<"SDL quit"<<std::endl;
+  SDL_DestroyTexture(texture);
+  SDL_DestroyRenderer(m_renderer);
   SDL_DestroyWindow(m_window);
-  SDL_Quit();
+}
+
+void Window::clear(){
+  SDL_RenderClear(m_renderer);
+
+}
+void Window::present(){
+  SDL_RenderPresent(m_renderer);
+}
+
+void Window::draw(AVFrame* frame, std::uint8_t opacity){
+  int r = SDL_UpdateYUVTexture(texture,
+      &position,
+      frame->data[0],
+      frame->linesize[0],
+      frame->data[1],
+      frame->linesize[1],
+      frame->data[2],
+      frame->linesize[2]);
+  if (r !=0){
+    DEBUG_LOG("Failed to update texture : "<<SDL_GetError()<<std::endl);
+  }
+  r = SDL_SetTextureAlphaMod(texture, opacity);
+  if(r != 0){
+    DEBUG_LOG("Alpha modulation, not supported on this texture"<<std::endl);
+  }
+  SDL_RenderCopy(m_renderer, texture, NULL, &position);
 }
 
 void  Window::draw(entities::Video& video) {
-
-  static const SDL_Rect position {0, 0, m_width, m_height};
   int waitingTime;
   AVFrame*              frame;
 
   timer.setTargetSpeed(video.speed);
   for(int i=0;i<timer.getSkipCount();i++){
-    if(video.buffer->size() < 2){
+    if(video.buffer.size() < 2){
       DEBUG_LOG("Buffer too slow at "<<video.speed<<"fps"<<std::endl);
       break; //don't empty the buffer...
     }
-    video.buffer->forward();
+    video.buffer.forward();
   }
   
-  if(video.state == entities::in && video.buffer->size() > 0) {
-    fadeIn(video, 255 * fadeMultiplier);
-  } else if(video.state == entities::out && video.buffer->size() > 0) {
-    fadeOut(video, 255 * fadeMultiplier);
-  }
   waitingTime = timer.getWaitingTime(SDL_GetTicks());
   if(waitingTime == 0){
     DEBUG_LOG("Display too slow"<<std::endl);
+  }else if(waitingTime < 10){ //approximate granularity of the wait function
+    SDL_Delay(1);
   }else{
-    SDL_Delay(1.0);
+    SDL_Delay(waitingTime - 10);
   }
 
-  if(targetTime - currentTime > 0) {
+  if(0 < (targetTime - currentTime) ) {
     frame = lastFrame;
-    if(video.buffer->size() && video.pause && video.state == entities::in && video.alpha <= 1) {
-      frame = video.buffer->forward()->frame();
+    if(0 < video.buffer.size() && video.pause && video.state == entities::in && video.alpha <= 1) {
+      frame = video.buffer.forward()->frame();
       lastFrame = frame;
     } else {
       currentTime += SDL_GetTicks() * (video.speed / 25.0); // 25 FPS
     }
-  } else if ((video.buffer->size() > 0 && !video.pause)) {
-    frame = video.buffer->forward()->frame();
+  } else if ((0 < video.buffer.size() && !video.pause)) {
+    frame = video.buffer.forward()->frame();
     lastFrame = frame;
     currentTime = 0;
     targetTime = currentTime + waitingTime;
@@ -121,38 +221,5 @@ void  Window::draw(entities::Video& video) {
     targetTime = currentTime + waitingTime;
   }
   //! Draw
-  SDL_RenderClear(m_renderer);
-
-  SDL_UpdateYUVTexture(m_displayFrame,
-      &position,
-      frame->data[0],
-      frame->linesize[0],
-      frame->data[1],
-      frame->linesize[1],
-      frame->data[2],
-      frame->linesize[2]);
-
-  SDL_SetTextureBlendMode(m_displayFrame, SDL_BLENDMODE_BLEND);
-  SDL_SetTextureAlphaMod(m_displayFrame, video.alpha);
-
-  SDL_RenderCopy(m_renderer, m_displayFrame, &position, &position);
-  SDL_RenderPresent(m_renderer);
-
-}
-
-void Window::fadeIn(entities::Video& video, int delta) {
-  if(video.alpha >= 255) {
-    video.alpha = 255;
-    video.state = entities::none;
-  } else
-    video.alpha += delta;
-}
-
-void Window::fadeOut(entities::Video& video, int delta) {
-  if(video.alpha <= 0) {
-    video.alpha = 0;
-    video.state = entities::switch_state;
-  }
-  else
-    video.alpha -= delta;
+  draw(frame, video.alpha);
 }

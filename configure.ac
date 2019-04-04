@@ -108,6 +108,12 @@ AS_IF([test "x$enable_seamless" == "xyes"], [
   AC_DEFINE(ENABLE_SEAMLESS,[1],[Enable seamless video loop from dbus Open Action])
 ])
 
+AC_ARG_ENABLE([crossfade],
+    AS_HELP_STRING([--enable-crossfades], [Enable crossfade when switching video]))
+AS_IF([test "x$enable_crossfade" == "xyes"], [
+  AC_DEFINE(ENABLE_CROSSFADE,[1],[Enable crossfade when switching video])
+])
+
 AC_CONFIG_FILES([ Makefile
                   doc/Makefile
                   src/Makefile

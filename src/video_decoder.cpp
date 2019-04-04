@@ -22,7 +22,7 @@ void  VideoDecoder::updateVideoBuffer(std::size_t  writes) {
   }
 }
 
-int VideoDecoder::getDecodeIndex(DeBuffer<entities::VideoFrame*>& buffer){
+int VideoDecoder::getDecodeIndex(const DeBuffer<entities::VideoFrame*>& buffer){
   int          decodeFrom;
 
   if (buffer.direction() == Direction::NORMAL){
@@ -115,7 +115,6 @@ void  VideoDecoder::seek(unsigned int target){
 
   double  realTarget = (double)target / m_context.fps / m_context.timeBase;
   int     error;
-  std::cout <<"Seek to : "<<target<<std::endl;
   //! av_format_seek_file is working, unlike av_format_seek_frame
   if ((error = avformat_seek_file(m_context.formatCtx,
                          m_context.streamIndex,

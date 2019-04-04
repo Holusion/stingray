@@ -1,22 +1,19 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <errno.h>
-#include <string>
+
 #include "dbus.hpp"
-#include <iostream>
 
 using namespace dbus;
 
-EventManager* DBus::manager = NULL;
-
+std::mutex DBus::m;
+std::string DBus::play_next_;
 /**
 This class creates a dbus interface for this application and listen the bus
 to call the function called by the system
 **/
 
-DBus::DBus(EventManager* manager) {
+DBus::DBus(EventManager* manager) : 
+  quit(false)
+  {
   int r;
-  DBus::manager = manager;
 
   r = sd_bus_open_user(&bus);
   if(r < 0) {
@@ -35,11 +32,14 @@ DBus::DBus(EventManager* manager) {
     std::cerr << "Failed to aquire service name: " << strerror(-r) << std::endl;
     return;
   }
+  th = std::thread(DBus::listen_loop, this);
 }
 
 DBus::~DBus() {
+  quit = true;
   sd_bus_slot_unref(slot);
   sd_bus_unref(bus);
+  th.join();
 }
 
 void DBus::update() {
@@ -50,7 +50,7 @@ void DBus::update() {
     return;
   }
 
-  if(!DBus::manager->isEnd() && r == 0) {
+  if(r == 0 && !this->quit) {
     r = sd_bus_wait(bus, (uint64_t) 1);
     if(r < 0) {
       std::cerr << "Failed to wait on bus: " << strerror(-r) << std::endl;
@@ -58,10 +58,33 @@ void DBus::update() {
     }
   }
 }
+
+std::string DBus::pop_play_next(){
+  std::lock_guard<std::mutex> lock(DBus::m);
+  std::string s = DBus::play_next_;
+  DBus::play_next_ = "";
+  return s;
+}
+
+std::string DBus::set_play_next(std::string str){
+  std::lock_guard<std::mutex> lock(DBus::m);
+  DBus::play_next_ = str;
+}
+std::string DBus::set_play_next(const char* str){
+  std::lock_guard<std::mutex> lock(DBus::m);
+  DBus::play_next_ = std::string(str);
+}
 int DBus::method_activate(sd_bus_message *m, void *userdata, sd_bus_error *ret_error) {
   return 0;
 }
 
+
+void DBus::listen_loop(dbus::DBus* bus) {
+
+  while(!bus->quit) {
+    bus->update();
+  }
+}
 
 /**
 changeVideo -> busctl --user call com.stingray /com/stingray org.freedesktop.Application Open asa{sv} 1 $(pwd)/test/fixtures/rolex.mov 1 desktop-startup-id s truc
@@ -73,16 +96,12 @@ int DBus::method_open(sd_bus_message *m, void *userdata, sd_bus_error *ret_error
     std::cerr << "Failed to parse parameters: " << strerror(-r) << std::endl;
     return r;
   }
+  set_play_next(videoState);
   r = sd_bus_reply_method_return(m, NULL);
   if(r < 0) {
     std::cerr << "Failed to send reply: " << strerror(-r) << std::endl;
     return r;
   }
-  if(manager->nextVideo.compare("") == 0) {
-    cout << "Open call :"<< videoState << endl;
-    manager->nextVideo.insert(0, videoState);
-  }
-
   return 0;
 }
 

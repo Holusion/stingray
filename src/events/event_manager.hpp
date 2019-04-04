@@ -7,11 +7,13 @@
 #include <vector>
 #include  "video.hpp"
 #include "../config.h"
+
 #ifdef ENABLE_MODULES
-#include <regex>
-#include <dirent.h>
-#include <ltdl.h>
+  #include <regex>
+  #include <dirent.h>
+  #include <ltdl.h>
 #endif
+
 #include "eventListener.hpp"
 #include  "events/SDLEvents.hpp"
 
@@ -27,24 +29,28 @@ typedef struct moduleStruct {
 #endif
 //! @class EventManager
 //! @brief Where all events code are
+
+typedef struct app_state {
+  int axis;
+  bool quit;
+} state_t;
+
 class  EventManager {
 
   private:
     bool            quit; //!< Boolean which decide if the program run or not
-    bool            changeReceived;
     SDLEvents    events;
+    #ifdef ENABLE_MODULES
     std::vector<struct moduleStruct> modules;
-    float fadeMultiplier = 0.5f;
+    #endif
   public:
     EventManager();
     ~EventManager();
     // Video_State currentState = not_play;
-    std::string nextVideo = std::string("");
     bool  isEnd() { return quit; }
     //! @brief Update video data and more
-    void         update(entities::Video& video);
+    state_t update();
     void exit(){ quit = true; };
-    void changeVideoState();
     #ifdef ENABLE_MODULES
     void loadModules();
     void openModule(char* filename);

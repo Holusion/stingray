@@ -18,10 +18,10 @@ void cycle(decoder::VideoDecoder* decoder,entities::Video* video ){
   std::chrono::high_resolution_clock::time_point p(std::chrono::high_resolution_clock::now());
 
   for (c=0;c<10;c++){
-    decoder->decodeAndWrite(*video->buffer);
+    decoder->decodeAndWrite(video->buffer);
     for(i=0;i<DECODE_SIZE;i++){
       //We don't check buffer has enough elements : it should...
-      video->buffer->forward();
+      video->buffer.forward();
     }
   }
   using dura = std::chrono::duration<double>;
@@ -41,7 +41,7 @@ int  main (int argc, char** argv) {
     return EXIT_FAILURE;
   }
 
-  video.buffer->swap();
+  video.buffer.swap();
   try {
     while(true)
       cycle(&decoder,&video);

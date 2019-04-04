@@ -22,7 +22,6 @@ namespace  decoder {
     private:
       std::array<entities::VideoFrame*, DECODE_SIZE>  m_decodeArray;
       DecoderContext&                                 m_context;
-
     public:
       VideoDecoder(DecoderContext& context);
       ~VideoDecoder();
@@ -42,7 +41,7 @@ namespace  decoder {
       void        nextFrame(AVFrame* frame); //!< Can Throw AVException
 
       //! @brief Check where we need to decode from
-      int         getDecodeIndex(DeBuffer<entities::VideoFrame*>& buffer);
+      int         getDecodeIndex(const DeBuffer<entities::VideoFrame*>& buffer);
 
 
 #ifdef  TESTS      //! @brief Some Google Tests

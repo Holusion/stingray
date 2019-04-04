@@ -24,6 +24,7 @@ EventManager::~EventManager() {
   quit = true;
   //FIXME really no problem with threads close?
 }
+
 #ifdef ENABLE_MODULES
 void EventManager::loadModules(){
   std::string s;
@@ -96,65 +97,46 @@ void EventManager::unloadModules(){
 }
 #endif
 
-void  EventManager::update(entities::Video& video) {
-  int axis=0;
+state_t EventManager::update(){
+  state_t s = state_t{0, false};
   events.update();
+  if (events.getQuit() != 0){
+    s.quit = true;
+  }
+  #ifdef ENABLE_MODULES
   for(unsigned i =0; i < modules.size(); i++) {
     if(modules[i].update != NULL){
       modules[i].update(modules[i].listener);
     }
-    axis += modules[i].listener->getAxis();
-    quit = (modules[i].listener->getQuit() != 0 || quit)?true:false; //prevent quit unsetting
+    s.axis += modules[i].listener->getAxis();
+    s.quit = (modules[i].listener->getQuit() != 0 || quit)?true:false; //prevent quit unsetting
     //currentState = modules[i].listener->getState();
   }
-  if (events.getQuit() != 0){
-    quit = true;
+  #endif
+  if(s.axis == 0){
+    s.axis = events.getAxis(); //keyboard is ignored if any other input is active.
   }
-  if(quit){
-    std::cout<<"Exit"<<std::endl;
-  }
-  if(axis == 0){
-    axis = events.getAxis(); //keyboard is ignored if any other input is active.
-  }
-  #ifdef ENABLE_AUTOEXIT
-  if (axis == lastAxis){
-    autoexit_count++;
-    if(nextVideo.compare("") != 0) {
-      autoexit_count = 0;
-    }
 
+  #ifdef ENABLE_AUTOEXIT
+  if (s.axis == lastAxis){
+    autoexit_count++;
     if (autoexit_count > video.size){ //update is called on each frame (~60fps)
       std::cout<<"Automatic exit (Inactive)"<<std::endl;
-      quit = true;
+      s.quit = true;
     }
   }else if (autoexit_count != 0){
     autoexit_count = 0;
   }
-  lastAxis = axis;
+  lastAxis = s.axis;
   #endif
-  // Check Pause
-  video.pause = (axis == 0) ? true : false;
-
-  if ( (axis < 0  && video.buffer->direction() == Direction::NORMAL)
-    || (0 < axis  && video.buffer->direction() == Direction::REVERSE))
-  {
-    video.buffer->swap();
-  }
-  video.speed = (video.context.fps *std::abs(axis))/4;
-
-  if(changeReceived) {
-    if(video.state == entities::not_play) {
-      video.state = entities::none;
-    }
-    else
-      video.state = entities::out;
-    changeReceived = false;
-  }
+  /*
+  if(s.quit){
+    std::cout<<"Exit"<<std::endl;
+  } //*/
+  quit = s.quit;
+  return s;
 }
 
-void EventManager::changeVideoState() {
-  changeReceived = true;
-}
 /* Copyright (C) 2016 Sebastien DUMETZ
  * This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
