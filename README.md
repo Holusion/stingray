@@ -5,7 +5,9 @@ Stingray is a video reader with fluid customizable play speed. Designed for user
 
 Read doc and install instructions at https://holusion.github.io/stingray/
 
+Example configuration :
 
+    CPPFLAGS=-DDEBUG ./configure --enable-seamless --enable-dbus --enable-capacity=100 --enable-crossfade --disable-modules
 
 # Tests and benchmark
 
@@ -48,3 +50,14 @@ Usefull packages :
     apt-get install yasm nvidia-cuda-toolkit
 
 Essentially, only CUVID could provide the kind of function we need. However it's not nearly mature enough to provide a stable base.
+
+### ffmpeg-static
+
+too much trouble with system-version. We need to static-compile FFMPEG to be able to use latest hwaccel
+
+Source : https://fritzone.wordpress.com/2010/05/11/link-with-static-ffmpeg/
+Generic Compile instructions : https://trac.ffmpeg.org/wiki/CompilationGuide/Ubuntu
+Could be made "more static" by using work on fully-static binary : https://github.com/zimbatm/ffmpeg-static/blob/master/build.sh
+
+final configure : 
+    ./configure --disable-ffplay --extra-libs="-lpthread -lm" --pkg-config-flags="--static" --enable-static --enable-gpl --enable-vaapi --enable-libx264

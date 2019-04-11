@@ -30,11 +30,15 @@ AC_LANG(C++)
 
 # Checks for modules
 PKG_CHECK_MODULES(SDL2, sdl2)
-PKG_CHECK_MODULES(avcodec, libavcodec >= 54.3.0)
-PKG_CHECK_MODULES(avformat, libavformat >= 54.3.0)
-PKG_CHECK_MODULES(avutil, libavutil >= 52.3.0)
+#PKG_CHECK_MODULES(avcodec, libavcodec >= 54.3.0)
+#PKG_CHECK_MODULES(avformat, libavformat >= 54.3.0)
+#PKG_CHECK_MODULES(avutil, libavutil >= 52.3.0)
 PKG_CHECK_MODULES(systemd, libsystemd)
-
+PKG_CHECK_MODULES(x11, x11)
+PKG_CHECK_MODULES(va, libva)
+PKG_CHECK_MODULES(vadrm, libva-drm)
+PKG_CHECK_MODULES(vax11, libva-x11)
+PKG_CHECK_MODULES(x264, x264)
 
 # Checks for libraries.
 AC_CHECK_LIB([SDL2], [SDL_PollEvent])

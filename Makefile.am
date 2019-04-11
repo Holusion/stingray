@@ -10,18 +10,23 @@ check_PROGRAMS = test_stingray
 TESTS = $(check_PROGRAMS)
 
 
+FFMPEG_CFLAGS = $(x11_CFLAGS) $(va_CFLAGS) $(vadrm_CFLAGS) $(vax11_CFLAGS) $(x264_CFLAGS)
+FFMPEG_LIBS = $(x11_LIBS) $(va_LIBS) $(vadrm_LIBS) $(vax11_LIBS) $(x264_LIBS) -llzma -lm -lz
+FFMPEG_ASSEMBLIES = ffmpeg/libavformat/libavformat.a \
+                  ffmpeg/libavcodec/libavcodec.a \
+                  ffmpeg/libavutil/libavutil.a \
+                  ffmpeg/libswresample/libswresample.a
+
 ### Main Program flags ###
 
-stingray_CPPFLAGS = -Wall -Wextra -I$(top_srcdir)/vendor -I$(top_srcdir)/src -g \
-                  $(systemd_CFLAGS) $(SDL2_CFLAGS) \
-                  $(avcodec_CFLAGS) $(avformat_CFLAGS) $(avutil_CFLAGS) \
+stingray_CPPFLAGS = -Wall -Wextra -I$(top_srcdir)/vendor -I$(top_srcdir)/ffmpeg -I$(top_srcdir)/src -g \
+                  $(systemd_CFLAGS) $(SDL2_CFLAGS) $(FFMPEG_CFLAGS) \
                   $(LTDLINCL)
 
-stingray_LDFLAGS	= -lpthread $(systemd_LIBS) $(SDL2_LIBS) \
-                  $(avcodec_LIBS) $(avformat_LIBS) $(avutil_LIBS) \
-                  -export-dynamic
+stingray_LDFLAGS	= -lpthread $(systemd_LIBS) $(SDL2_LIBS) $(FFMPEG_LIBS)
 
-stingray_LDADD = $(LIBLTDL)
+stingray_LDADD = $(LIBLTDL) $(FFMPEG_ASSEMBLIES)
+                  
 stingray_DEPENDENCIES = $(LTDLDEPS)
 
 
@@ -53,10 +58,10 @@ noinst_HEADERS =   src/constants.h \
 
 ### Check Program flags ###
 test_stingray_CPPFLAGS = -DFIXTURES=\"$(srcdir)/test\"  -DTESTS -I$(top_srcdir)/src -isystem $(top_srcdir)/vendor/gtest/include \
-                       $(SDL2_CFLAGS) $(avcodec_CFLAGS) $(avformat_CFLAGS) $(avutil_CFLAGS)
+                       $(SDL2_CFLAGS) $(FFMPEG_CFLAGS) -I$(top_srcdir)/ffmpeg
 
-test_stingray_LDFLAGS = $(avcodec_LIBS) $(avformat_LIBS) $(avutil_LIBS)
-test_stingray_LDADD =  $(top_srcdir)/vendor/gtest/libgtest.a
+test_stingray_LDFLAGS =  -lpthread -lx264 -llzma -lm -lz $(FFMPEG_LIBS)
+test_stingray_LDADD =  $(top_srcdir)/vendor/gtest/libgtest.a $(FFMPEG_ASSEMBLIES)
 
 ### Check Program sources files ###
 test_stingray_SOURCES = test/test_main.cpp \
@@ -74,7 +79,8 @@ noinst_HEADERS += test/test_frametimer.hpp \
 benchmark_SOURCES = test/benchmark_decodeSpeed.cpp \
   src/frametimer.cpp src/video_decoder.cpp src/decoder_context.cpp src/video.cpp
 
-benchmark_CPPFLAGS = -Wall -Wextra -I$(top_srcdir)/vendor -I$(top_srcdir)/src \
-                  $(avcodec_CFLAGS) $(avformat_CFLAGS) $(avutil_CFLAGS)
+benchmark_CPPFLAGS = -Wall -Wextra $(FFMPEG_CFLAGS) \
+                    -I$(top_srcdir)/vendor -I$(top_srcdir)/ffmpeg -I$(top_srcdir)/src
 
-benchmark_LDFLAGS	= -lpthread $(avcodec_LIBS) $(avformat_LIBS) $(avutil_LIBS) -export-dynamic
+benchmark_LDFLAGS	= -lpthread -lpthread -lx264 -llzma -lm -lz $(x11_LIBS) $(FFMPEG_LIBS) -export-dynamic
+benchmark_LDADD = $(FFMPEG_ASSEMBLIES)

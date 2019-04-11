@@ -10,7 +10,7 @@
 #include  <iostream>
 #include  <string>
 extern "C" {
-  #include  <libavutil/error.h>
+  #include  "libavutil/error.h"
 }
 //! @class AVException
 //! @brief Libav/Ffmpeg exception
@@ -26,15 +26,19 @@ class  AVException : public std::exception{
 
       char errstr[100];
 
-      if(additional_infos.size() > 0){
-        additional_infos.insert(0,"in : ");
-        additional_infos.append(", ");
-      }
-      log = additional_infos;
+      
+
+      log = "";
       av_strerror(AVERROR(errnum),errstr,100);
+      log.append("Error N°");
       log.append(std::to_string(errnum));
       log.append(" - ");
       log.append(errstr);
+      if(additional_infos.size() > 0){
+        log.append("(");
+        log.append(additional_infos);
+        log.append(")");
+      }
     }
     ~AVException(){
     };

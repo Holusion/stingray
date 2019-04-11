@@ -34,9 +34,6 @@ namespace  decoder {
 
       void        seek(unsigned int position);
 
-      //! @brief Back file cursor of some  frames
-      void        seekBack(unsigned int x);
-
       //! @brief Decode the next frame in the video
       void        nextFrame(AVFrame* frame); //!< Can Throw AVException
 

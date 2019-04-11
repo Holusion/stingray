@@ -3,6 +3,7 @@
 using namespace entities;
 
 Video::Video(const char* file, int width, int height, std::size_t start_frame_number): 
+  filename(file),
   context(file, width, height),
   pause(false),
   speed(this->context.fps),
@@ -16,12 +17,15 @@ Video::Video(const char* file, int width, int height, std::size_t start_frame_nu
   state(in),
   size(context.nbFrames),
   th(Video::decode_loop, this) 
-  {}
+  {
+    DEBUG_LOG("Opening new Video from " << filename <<std::endl);
+  }
 
 Video::~Video(){
   this->state = closed; //Cause thread to terminate among other things
   //Provide memory leaks, the buffer is not completely clean because it crashed when decoder try to decode empty buffer
   th.join();
+  DEBUG_LOG("Destroyed Video "<< filename <<std::endl);
   /*
     for(int i = 1; i < buffer.sizeBackData(); i++) {
     if(buffer.getBackData(i) != nullptr) delete buffer.getBackData(i);

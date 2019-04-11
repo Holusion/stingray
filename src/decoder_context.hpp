@@ -4,6 +4,8 @@
 extern "C" {
   #include  <libavcodec/avcodec.h>
   #include  <libavformat/avformat.h>
+  #include  <libavutil/pixdesc.h>
+
 }
 #include  "exceptions/global_exception.hpp"
 #include  "exceptions/av_exception.hpp"
@@ -30,6 +32,7 @@ namespace decoder{
       //! @brief Some Libav/Ffmpeg data
       AVFormatContext*  formatCtx;
       AVCodecContext*   codecCtx;
+      AVPixelFormat     pix_fmt;
       int               streamIndex;
 
     private:

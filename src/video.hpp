@@ -19,6 +19,7 @@ namespace  entities {
   class Video {
 
     public:
+      const std::string        filename;
       decoder::DecoderContext  context;
       bool                     pause;
       int16_t                  speed;
@@ -35,7 +36,7 @@ namespace  entities {
       static void decode_loop (entities::Video* video);
       void alpha_add(std::uint8_t a){
         std::uint8_t res = this->alpha + a;
-        DEBUG_LOG("Alpha Add to "<<std::to_string(res)<<std::endl);
+        //DEBUG_LOG("Alpha Add to "<<std::to_string(res)<<std::endl);
         if(res < this->alpha){
           this->alpha = UINT8_MAX;
         }else{
@@ -44,7 +45,7 @@ namespace  entities {
       }
       void alpha_sub(std::uint8_t a){
         std::uint8_t res = this->alpha - a;
-        DEBUG_LOG("Alpha Sub to "<<std::to_string(res)<<std::endl);
+        //DEBUG_LOG("Alpha Sub to "<<std::to_string(res)<<std::endl);
         if(this->alpha < res){
           //Check for underflow
           this->alpha = 0;
