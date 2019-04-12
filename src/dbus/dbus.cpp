@@ -4,7 +4,7 @@
 using namespace dbus;
 
 std::mutex DBus::m;
-std::string DBus::play_next_;
+std::string DBus::play_next_ = std::string();
 /**
 This class creates a dbus interface for this application and listen the bus
 to call the function called by the system
@@ -66,11 +66,11 @@ std::string DBus::pop_play_next(){
   return s;
 }
 
-std::string DBus::set_play_next(std::string str){
+void DBus::set_play_next(std::string str){
   std::lock_guard<std::mutex> lock(DBus::m);
   DBus::play_next_ = str;
 }
-std::string DBus::set_play_next(const char* str){
+void DBus::set_play_next(const char* str){
   std::lock_guard<std::mutex> lock(DBus::m);
   DBus::play_next_ = std::string(str);
 }

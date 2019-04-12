@@ -43,7 +43,7 @@ void run(int argc, char ** args){
       std::cout<<"Next video : "<<next_video<<std::endl;
       #ifdef ENABLE_SEAMLESS
         video = display.getSource();
-        video = std::make_shared<Video>(next_video.c_str(), display.getWidth(), display.getHeight(), video->buffer.index());
+          video = std::make_shared<Video>(next_video.c_str(), display.getWidth(), display.getHeight(), ((video)?video->buffer.index() : 0));
       #else
         video = std::make_shared<Video>(next_video.c_str(), display.getWidth(), display.getHeight(), 0);
       #endif

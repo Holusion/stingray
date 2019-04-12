@@ -34,8 +34,8 @@ namespace dbus {
       static const sd_bus_vtable stingray_vtable[];
       static void listen_loop(dbus::DBus* bus);
 
-      static std::string set_play_next(std::string);
-      static std::string set_play_next(const char*);
+      static void set_play_next(std::string);
+      static void set_play_next(const char*);
   };
 }
 

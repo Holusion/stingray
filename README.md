@@ -49,7 +49,7 @@ Usefull packages :
 
     apt-get install yasm nvidia-cuda-toolkit
 
-Essentially, only CUVID could provide the kind of function we need. However it's not nearly mature enough to provide a stable base.
+Essentially, CUVID could provide the kind of function we need. However it's not nearly mature enough to provide a stable base.
 
 ### ffmpeg-static
 

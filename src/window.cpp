@@ -59,6 +59,7 @@ void Display::draw(){
       this->nextSrc.reset();
     }else{
       this->currentSrc->alpha_sub(CROSSFADE_SPEED);
+      this->currentSrc->buffer.forward()->frame();
       //this->nextSrc->alpha_add(CROSSFADE_SPEED);
       //win->draw(*this->nextSrc, true);
     }
@@ -85,7 +86,12 @@ void Display::setSource(std::shared_ptr<entities::Video>& new_source){
 
 
 std::shared_ptr<entities::Video> Display::getSource(){
-  return std::shared_ptr<entities::Video>(this->currentSrc);
+  if(this->currentSrc){
+    return std::shared_ptr<entities::Video>(this->currentSrc);
+  }else{
+    return nullptr;
+  }
+  
 }
 
 
