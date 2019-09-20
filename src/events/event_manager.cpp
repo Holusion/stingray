@@ -33,17 +33,23 @@ void EventManager::loadModules(){
   if(lt_dlinit () != 0)
     std::cerr<<"LT_ERROR lt_dltinit : "<<lt_dlerror()<<std::endl;
   /* Set the module search path. */
-  if (lt_dlsetsearchpath ("/etc/stingray/modules.d") != 0) ///home/sebastien/repositories/switch/src/events
+  const char *modules_path= std::getenv("MODULES_PATH");
+  if(modules_path == NULL){
+    modules_path = "/etc/stingray/modules.d";
+  }
+  DEBUG_LOG("using modules path : "<<modules_path<<std::endl);
+  if (lt_dlsetsearchpath (modules_path) != 0)
     std::cerr<<"LT_ERROR lt_dlsetsearchpath : "<<lt_dlerror()<<std::endl;
   else{
-    d = opendir("/etc/stingray/modules.d");
+    d = opendir(modules_path);
     if (d){
       while ((dir = readdir(d)) != NULL){
         if( strstr(dir->d_name,".so")== dir->d_name+strlen(dir->d_name)-3
           || strstr(dir->d_name,".la")== dir->d_name+strlen(dir->d_name)-3 ){
+          DEBUG_LOG("Open module : "<<dir->d_name<<std::endl);
           openModule(dir->d_name);
         }else{
-          std::cout<<"discarded "<<dir->d_name<<" for modules"<<std::endl;
+          DEBUG_LOG("discarded "<<dir->d_name<<" for modules"<<std::endl);
         }
       }
       closedir(d);
@@ -100,9 +106,6 @@ void EventManager::unloadModules(){
 state_t EventManager::update(){
   state_t s = state_t{0, false};
   events.update();
-  if (events.getQuit() != 0){
-    s.quit = true;
-  }
   #ifdef ENABLE_MODULES
   for(unsigned i =0; i < modules.size(); i++) {
     if(modules[i].update != NULL){
@@ -113,10 +116,10 @@ state_t EventManager::update(){
     //currentState = modules[i].listener->getState();
   }
   #endif
-  if(s.axis == 0){
+  if( modules.size() == 0 ){
     s.axis = events.getAxis(); //keyboard is ignored if any other input is active.
   }
-
+  s.quit = s.quit || (events.getQuit() != 0);
   #ifdef ENABLE_AUTOEXIT
   if (s.axis == lastAxis){
     autoexit_count++;

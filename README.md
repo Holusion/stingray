@@ -26,7 +26,7 @@ With different encodings or to test code performance improvement.
 Compiling with debug symbols is done like :
 
     make clean
-    ./configure CPPFLAGS=-DDEBUG
+    CPPFLAGS=-DDEBUG ./configure 
     make
 
 # Hardware acceleration
@@ -53,7 +53,7 @@ Essentially, CUVID could provide the kind of function we need. However it's not 
 
 ### ffmpeg-static
 
-too much trouble with system-version. We need to static-compile FFMPEG to be able to use latest hwaccel
+If there is too much trouble with system-version, one can static-compile FFMPEG to be able to use latest hwaccel
 
 Source : https://fritzone.wordpress.com/2010/05/11/link-with-static-ffmpeg/
 Generic Compile instructions : https://trac.ffmpeg.org/wiki/CompilationGuide/Ubuntu

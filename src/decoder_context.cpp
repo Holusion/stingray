@@ -3,8 +3,10 @@
 
 using namespace decoder;
 
+
 DecoderContext::DecoderContext(const char* file,int width,int height) {
   AVCodec*  decoder;
+  AVStream *video = NULL;
   int ret;
 
   //! Register all formats and codecs
@@ -29,9 +31,19 @@ DecoderContext::DecoderContext(const char* file,int width,int height) {
     throw AVException(ret,"Cannot find a video stream in the input file"); //! Couldn't find stream information
   }
   this->streamIndex = ret;
+  video = this->formatCtx->streams[this->streamIndex];
+  if (!(this->codecCtx = avcodec_alloc_context3(decoder))){
+    throw AVException(AVERROR(ENOMEM),"not enough memory");
+  }
+  if (avcodec_parameters_to_context(this->codecCtx, video->codecpar) < 0)
+      throw AVException(-1, "Failed to set context parameters");
+
+  //this->codecCtx->get_format  = get_pix_format; 
+  /*
   this->codecCtx = this->formatCtx->streams[this->streamIndex]->codec;
   if(this->codecCtx == NULL)
     throw AVException(0,"No stream found from avformat_find_stream_info"); //! Couldn't find or Didn't find a video stream
+  //*/
   DEBUG_LOG("Decoder : "<<decoder->long_name<<std::endl);
  
   //If HWDEC setup fails or is disabled, this->codecCtx->hw_device_ctx == 0
@@ -39,22 +51,30 @@ DecoderContext::DecoderContext(const char* file,int width,int height) {
     // check for hardware decode
     // There may be multiple decoders so we might make a loop to search for the best one line in the FFMPEG example
     // https://www.ffmpeg.org/doxygen/4.1/hw_decode_8c-example.html#a54
-    const AVCodecHWConfig *config = avcodec_get_hw_config(decoder, 0);
-    if (!config) {
-      DEBUG_LOG("Decoder "<< decoder->name<< " does not support device type " << std::endl);
-    }else{
-      DEBUG_LOG("Found hwaccel decoder for : "<<av_hwdevice_get_type_name(config->device_type)<<std::endl);
-      this->pix_fmt = config->pix_fmt;
-      if ((ret = av_hwdevice_ctx_create(&this->codecCtx->hw_device_ctx, config->device_type,
-                                      "/dev/dri/renderD128", NULL, 0)) < 0 || ! this->codecCtx->hw_device_ctx) {
-        DEBUG_LOG("Failed to initialize hw_device_ctx : "<<std::to_string(ret));
+    for (int i = 0;; i++) {
+      const AVCodecHWConfig *config = avcodec_get_hw_config(decoder, i);
+      if (!config) {
+        DEBUG_LOG("Decoder "<< decoder->name<< " does not support device type " << std::endl);
+        break;
+      }else if(config->methods & AV_CODEC_HW_CONFIG_METHOD_HW_DEVICE_CTX){
+        //Use the first available hardware decoder
+        DEBUG_LOG("Found hwaccel decoder for : "<<av_hwdevice_get_type_name(config->device_type)<<std::endl);
+        this->pix_fmt = config->pix_fmt; //used by video_decoder
+        if ((ret = av_hwdevice_ctx_create(&this->codecCtx->hw_device_ctx, config->device_type,
+                                        "/dev/dri/renderD128", NULL, 0)) < 0 || ! this->codecCtx->hw_device_ctx) {
+          DEBUG_LOG("Failed to initialize hw_device_ctx : "<<std::to_string(ret));
+        }
+        break;
+      }else{
+        DEBUG_LOG("Not using decoder : "<< av_hwdevice_get_type_name(config->device_type)<<std::endl);
       }
     }
   #else
     DEBUG_LOG("not using hardware decoding"<<std::endl);
-    this->pix_fmt = AV_PIX_FMT_YUV420P;
+    this->pix_fmt = PIX_FMT_DEFAULT;
   #endif
 
+  DEBUG_LOG("using pix format : "<<av_get_pix_fmt_name(this->pix_fmt)<<std::endl);
   //DEBUG_LOG("Supports "<<*fmts<<std::endl);
     //! Open codec
   ret = avcodec_open2(this->codecCtx, decoder, nullptr);
@@ -74,9 +94,8 @@ DecoderContext::~DecoderContext() {
   if(this->codecCtx->hw_device_ctx != NULL){
     av_buffer_unref(&this->codecCtx->hw_device_ctx);
   }
-  avcodec_close(this->codecCtx);
-
-
+  
+  avcodec_free_context(&this->codecCtx);
   //! Close the video file
   avformat_close_input(&this->formatCtx);
 }
@@ -133,4 +152,21 @@ int64_t  DecoderContext::videoSize() {
     nbf = (int64_t)floor(getDurationSec() * getFps() + 0.5);
   }
   return nbf;
+}
+
+
+enum AVPixelFormat DecoderContext::get_pix_format(AVCodecContext *ctx, const enum AVPixelFormat *pix_fmts) {
+
+  //if (pix_fmts[i] == PIX_FMT_DEFAULT) return pix_fmt[i];
+  //Example from avcodec_default_get_format() in libavcodec/util.c
+  //Returns the first non-hwaccel pix_fmt
+  for(int i=0;;i++){
+    if (pix_fmts[i] == AV_PIX_FMT_NONE) break;
+    const AVPixFmtDescriptor *desc = av_pix_fmt_desc_get(pix_fmts[i]);
+    if(desc->flags & AV_PIX_FMT_FLAG_HWACCEL){
+      continue;
+    }
+    DEBUG_LOG("choosing pixel format : "<<av_get_pix_fmt_name(pix_fmts[i])<<std::endl);
+    return pix_fmts[i];
+  }
 }

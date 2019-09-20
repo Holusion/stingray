@@ -7,7 +7,7 @@
 #include <vector>
 #include  "video.hpp"
 #include "../config.h"
-
+#include "debug.h"
 #ifdef ENABLE_MODULES
   #include <regex>
   #include <dirent.h>

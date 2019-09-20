@@ -113,6 +113,7 @@ void VideoDecoder::nextFrame(AVFrame* frame) {
         }
         frameFinished = 1;
         //List available pix_fmt
+        //FIXME use av_hwframe_transfer_get_formats to compute possible source/dest formats
         if(m_context.codecCtx->hw_device_ctx != 0 && src_frame->format == m_context.pix_fmt){
           /* retrieve data from GPU to CPU */
           if ((ret = av_hwframe_transfer_data(frame, src_frame, 0)) < 0) {
