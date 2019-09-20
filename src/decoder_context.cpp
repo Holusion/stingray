@@ -34,21 +34,26 @@ DecoderContext::DecoderContext(const char* file,int width,int height) {
     throw AVException(0,"No stream found from avformat_find_stream_info"); //! Couldn't find or Didn't find a video stream
   DEBUG_LOG("Decoder : "<<decoder->long_name<<std::endl);
  
-
+  //If HWDEC setup fails or is disabled, this->codecCtx->hw_device_ctx == 0
+  #if ENABLE_HWDEC
     // check for hardware decode
-  // There may be multiple decoders so we might make a loop to search for the best one line in the FFMPEG example
-  // https://www.ffmpeg.org/doxygen/4.1/hw_decode_8c-example.html#a54
-  const AVCodecHWConfig *config = avcodec_get_hw_config(decoder, 0);
-  if (!config) {
-    DEBUG_LOG("Decoder "<< decoder->name<< " does not support device type " << std::endl);
-  }else{
-    DEBUG_LOG("Found hwaccel for : "<<av_hwdevice_get_type_name(config->device_type)<<std::endl);
-    this->pix_fmt = config->pix_fmt;
-    if ((ret = av_hwdevice_ctx_create(&this->codecCtx->hw_device_ctx, config->device_type,
-                                     "/dev/dri/renderD128", NULL, 0)) < 0 || ! this->codecCtx->hw_device_ctx) {
-      DEBUG_LOG("Failed to initialize hw_device_ctx : "<<std::to_string(ret));
+    // There may be multiple decoders so we might make a loop to search for the best one line in the FFMPEG example
+    // https://www.ffmpeg.org/doxygen/4.1/hw_decode_8c-example.html#a54
+    const AVCodecHWConfig *config = avcodec_get_hw_config(decoder, 0);
+    if (!config) {
+      DEBUG_LOG("Decoder "<< decoder->name<< " does not support device type " << std::endl);
+    }else{
+      DEBUG_LOG("Found hwaccel decoder for : "<<av_hwdevice_get_type_name(config->device_type)<<std::endl);
+      this->pix_fmt = config->pix_fmt;
+      if ((ret = av_hwdevice_ctx_create(&this->codecCtx->hw_device_ctx, config->device_type,
+                                      "/dev/dri/renderD128", NULL, 0)) < 0 || ! this->codecCtx->hw_device_ctx) {
+        DEBUG_LOG("Failed to initialize hw_device_ctx : "<<std::to_string(ret));
+      }
     }
-  }
+  #else
+    DEBUG_LOG("not using hardware decoding"<<std::endl);
+    this->pix_fmt = AV_PIX_FMT_YUV420P;
+  #endif
 
   //DEBUG_LOG("Supports "<<*fmts<<std::endl);
     //! Open codec

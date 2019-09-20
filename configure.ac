@@ -30,15 +30,10 @@ AC_LANG(C++)
 
 # Checks for modules
 PKG_CHECK_MODULES(SDL2, sdl2)
-#PKG_CHECK_MODULES(avcodec, libavcodec >= 54.3.0)
-#PKG_CHECK_MODULES(avformat, libavformat >= 54.3.0)
-#PKG_CHECK_MODULES(avutil, libavutil >= 52.3.0)
+PKG_CHECK_MODULES(avcodec, libavcodec >= 58)
+PKG_CHECK_MODULES(avformat, libavformat >= 58)
+PKG_CHECK_MODULES(avutil, libavutil >= 56)
 PKG_CHECK_MODULES(systemd, libsystemd)
-PKG_CHECK_MODULES(x11, x11)
-PKG_CHECK_MODULES(va, libva)
-PKG_CHECK_MODULES(vadrm, libva-drm)
-PKG_CHECK_MODULES(vax11, libva-x11)
-PKG_CHECK_MODULES(x264, x264)
 
 # Checks for libraries.
 AC_CHECK_LIB([SDL2], [SDL_PollEvent])
@@ -116,6 +111,13 @@ AC_ARG_ENABLE([crossfade],
     AS_HELP_STRING([--enable-crossfades], [Enable crossfade when switching video]))
 AS_IF([test "x$enable_crossfade" == "xyes"], [
   AC_DEFINE(ENABLE_CROSSFADE,[1],[Enable crossfade when switching video])
+])
+
+# hardware acceleration (Default enable)
+AC_ARG_ENABLE([hwdec],
+  AS_HELP_STRING([--disable-hwdec], [Disable Hardware decode]))
+AS_IF([test "x$enable_hwdec" != "xno"], [
+  AC_DEFINE(ENABLE_HWDEC,[1],[Enable Hardware Decode])
 ])
 
 AC_CONFIG_FILES([ Makefile

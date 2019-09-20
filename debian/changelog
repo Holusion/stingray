@@ -1,7 +1,11 @@
-stingray (0.3.2) UNRELEASED; urgency=medium
+stingray (1.0.0) UNRELEASED; urgency=medium
 
+  [ yann ]
   * move fade in / fade out in render process
   * 
+
+  [ Sebastien Dumetz ]
+  * Upgrade ffmpeg to v58 to use vaapi hwaccel when available
 
  -- yann <y.dubois@holusion.com>  Wed, 06 Jun 2018 11:29:35 +0100
 

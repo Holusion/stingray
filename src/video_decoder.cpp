@@ -113,18 +113,7 @@ void VideoDecoder::nextFrame(AVFrame* frame) {
         }
         frameFinished = 1;
         //List available pix_fmt
-        AVPixelFormat* fmts = NULL;
-        /*
-        DEBUG_LOG("Getting formats"<<std::endl);
-        ret = av_hwframe_transfer_get_formats(src_frame->hw_frames_ctx, AV_HWFRAME_TRANSFER_DIRECTION_FROM, &fmts, 0);
-        if(ret < 0){
-          throw AVException(ret, "hwframe get formats");
-        }
-        for(int i=0; fmts[i] != AV_PIX_FMT_NONE; i++){
-          DEBUG_LOG("Supports " << av_get_pix_fmt_name(fmts[i]) << "(N°"<<fmts[i]<<")"<<std::endl);
-        }
-        //*/
-        if(src_frame->format == m_context.pix_fmt){
+        if(m_context.codecCtx->hw_device_ctx != 0 && src_frame->format == m_context.pix_fmt){
           /* retrieve data from GPU to CPU */
           if ((ret = av_hwframe_transfer_data(frame, src_frame, 0)) < 0) {
             throw AVException(ret, "Error transfering the data to system memory");
