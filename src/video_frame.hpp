@@ -12,7 +12,7 @@ extern "C" {
 #ifdef  TESTS
 #include  "gtest/gtest.h"
 #endif
-
+#include "debug.h"
 //! @namespace  entities
 //! @brief  Data namespace
 namespace  entities {
@@ -20,7 +20,6 @@ namespace  entities {
   //! @class VideoFrame
   //! @brief To encapsulate one AVFrame
   class  VideoFrame {
-
     private:
       AVFrame*  m_frame;
 
@@ -33,21 +32,13 @@ namespace  entities {
 #endif
 
     public:
-      VideoFrame() : m_frame(nullptr) {};
+      //static int alloc;
+      VideoFrame();
       //! @brief Constructor from libav/ffmpeg
-      VideoFrame(AVFrame* base) {
-
-        m_frame = av_frame_clone(base);
-        av_frame_unref(base);
-      }
-      ~VideoFrame() {
-
-        if (m_frame != nullptr)
-          av_frame_free(&m_frame);
-      }
-
+      VideoFrame(AVFrame* base);
+      ~VideoFrame();
     public:
-      AVFrame*  frame() { return m_frame; }
+      AVFrame*  frame();
   };
 }
 #endif

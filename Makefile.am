@@ -40,6 +40,7 @@ stingray_SOURCES= src/launcher.cpp \
   src/video.cpp \
   src/video_decoder.cpp \
   src/decoder_context.cpp \
+  src/video_frame.cpp \
   src/window.cpp
 
 ### Main Program header files ###
@@ -67,7 +68,7 @@ test_stingray_LDADD =  $(top_srcdir)/vendor/gtest/libgtest.a
 ### Check Program sources files ###
 test_stingray_SOURCES = test/test_main.cpp \
   test/test_video.cpp test/test_debuffer.cpp test/test_video_decoder.cpp test/test_frametimer.cpp \
-  src/video.cpp src/frametimer.cpp src/video_decoder.cpp  src/decoder_context.cpp
+  src/video.cpp src/frametimer.cpp src/video_decoder.cpp  src/decoder_context.cpp src/video_frame.cpp
 
 ### Check Program sources files ###
 noinst_HEADERS += test/test_frametimer.hpp \
@@ -78,7 +79,7 @@ noinst_HEADERS += test/test_frametimer.hpp \
 
 ### benchmark decoder ###
 benchmark_SOURCES = test/benchmark_decodeSpeed.cpp \
-  src/frametimer.cpp src/video_decoder.cpp src/decoder_context.cpp src/video.cpp
+  src/frametimer.cpp src/video_decoder.cpp src/decoder_context.cpp src/video.cpp src/video_frame.cpp
 
 benchmark_CPPFLAGS = -Wall -Wextra $(FFMPEG_CFLAGS) \
                     -I$(top_srcdir)/vendor -I$(top_srcdir)/ffmpeg -I$(top_srcdir)/src
