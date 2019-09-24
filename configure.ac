@@ -3,7 +3,10 @@
 
 AC_PREREQ([2.69])
 AC_INIT([stingray], [0.1.0], [s.dumetz@holusion.com])
-AX_CXX_COMPILE_STDCXX(11, [noext]) # must be before AC_CONFIG_AUX_DIR
+
+
+AX_CXX_COMPILE_STDCXX(17, [noext])# must be before AC_CONFIG_AUX_DIR
+
 AC_CONFIG_AUX_DIR([build-aux]) # must be on top of LT macros
 LT_INIT([dlopen])
 
@@ -97,19 +100,29 @@ AC_ARG_ENABLE([capacity],
 AS_IF([test "$enable_capacity"], [
   AC_DEFINE_UNQUOTED(CAPACITY, $enable_capacity, [Set capacity])
 ], [
-  AC_DEFINE_UNQUOTED(CAPACITY, 256, [Set capacity])
+  AC_DEFINE_UNQUOTED(CAPACITY, 32, [Set capacity])
 ])
 
-# allow stingray to auto-start video at last known frame number
+# Configure decode batch size
+AC_ARG_ENABLE([batch],
+    AS_HELP_STRING([--enable-batch], [Set the cbatch size for decoder]))
+AS_IF([test "$enable_batch"], [
+  AC_DEFINE_UNQUOTED(DECODE_SIZE, $enable_batch, [Set batch decode size])
+], [
+  AC_DEFINE_UNQUOTED(DECODE_SIZE, 8, [Set batch decode size])
+])
+
+# allow stingray to auto-start video at last known frame number (default disable) - unstable
 AC_ARG_ENABLE([seamless],
     AS_HELP_STRING([--enable-seamless], [Enable seamless video loop from dbus Open Action]))
 AS_IF([test "x$enable_seamless" == "xyes"], [
   AC_DEFINE(ENABLE_SEAMLESS,[1],[Enable seamless video loop from dbus Open Action])
 ])
 
+# enable crossfade when switching video (default enable)
 AC_ARG_ENABLE([crossfade],
-    AS_HELP_STRING([--enable-crossfades], [Enable crossfade when switching video]))
-AS_IF([test "x$enable_crossfade" == "xyes"], [
+    AS_HELP_STRING([--disable-crossfades], [Enable crossfade when switching video]))
+AS_IF([test "x$enable_crossfade" != "xno"], [
   AC_DEFINE(ENABLE_CROSSFADE,[1],[Enable crossfade when switching video])
 ])
 

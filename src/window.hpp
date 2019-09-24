@@ -24,6 +24,7 @@ namespace  core {
       SDL_Window*           m_window;
       SDL_Renderer*         m_renderer;
       SDL_Texture* texture;
+      AVFrame*              blackFrame;
       AVFrame*              lastFrame;
       int            m_width, m_height;
       bool shown;

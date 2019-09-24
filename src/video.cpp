@@ -2,9 +2,9 @@
 
 using namespace entities;
 
-Video::Video(const char* file, int width, int height, std::size_t start_frame_number): 
+Video::Video(const std::string file, int width, int height, std::size_t start_frame_number): 
   filename(file),
-  context(file, width, height),
+  context(file.c_str(), width, height),
   pause(false),
   speed(this->context.fps),
   //FIXME does inherit parent's position but not its direction...

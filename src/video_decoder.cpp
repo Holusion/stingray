@@ -3,13 +3,16 @@
 using namespace  decoder;
 
 VideoDecoder::VideoDecoder(DecoderContext& context): m_context(context) {
-  tmpframe = av_frame_alloc();
   for (unsigned int i = 0; i < DECODE_SIZE; ++i)
     m_decodeArray[i] = nullptr;
 }
 
 VideoDecoder::~VideoDecoder(){
-  av_frame_free(&tmpframe);
+  for (unsigned int i = 0; i < DECODE_SIZE; ++i) {
+    if(m_decodeArray[i] != nullptr){
+      delete m_decodeArray[i];
+    }
+  }
 }
 
 
@@ -53,6 +56,8 @@ void  VideoDecoder::decodeAndWrite(DeBuffer<entities::VideoFrame*> & buffer) {
   for (std::size_t i=0; i <  m_decodeArray.size(); i++){
     if (!buffer.write(m_decodeArray[i], direction)){
       std::cout<<"Out of capacity"<<std::endl;
+    }else{
+      m_decodeArray[i] = nullptr;
     }
   }
 
@@ -66,9 +71,12 @@ void  VideoDecoder::decode(unsigned int current) {
 
   //! Fill decodeArray with VideoFrame
   for (unsigned int i = 0; i < DECODE_SIZE; ++i) {
-
-    nextFrame(tmpframe);
-    m_decodeArray[i] = new entities::VideoFrame(tmpframe);
+    if(m_decodeArray[i] != nullptr){
+      DEBUG_LOG("Pre-initialized decodeArray field"<<std::endl);
+      delete m_decodeArray[i];
+    }
+    m_decodeArray[i] = new entities::VideoFrame();
+    nextFrame(m_decodeArray[i]->frame());
   }
 }
 

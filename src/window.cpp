@@ -6,7 +6,7 @@ using namespace  core;
 
 
 Display::Display(){
-  if(SDL_Init(SDL_INIT_VIDEO))
+  if(SDL_Init(SDL_INIT_VIDEO) !=0)
     throw SDLException("Could not initialize SDL");
 
   SDL_GL_SetAttribute( SDL_GL_CONTEXT_MAJOR_VERSION, 3);
@@ -96,7 +96,7 @@ std::shared_ptr<entities::Video> Display::getSource(){
 
 
 
-Window::Window(SDL_DisplayMode  mode) :currentTime(0){
+Window::Window(SDL_DisplayMode  mode) :currentTime(0), targetTime(0){
   int display_count = 0, display_index = 0, mode_index = 0;
   
   //GetDesktopDisplayMode is relying on RandR extension, disabled by Xinerama
@@ -134,7 +134,7 @@ Window::Window(SDL_DisplayMode  mode) :currentTime(0){
   SDL_SetTextureBlendMode(texture, SDL_BLENDMODE_BLEND);
   
   /* Create black frame */
-  lastFrame = av_frame_alloc();
+  blackFrame = lastFrame = av_frame_alloc();
   lastFrame->width = getWidth();
   lastFrame->height = getHeight();
   lastFrame->format = AV_PIX_FMT_YUVJ420P;
@@ -154,6 +154,8 @@ Window::Window(SDL_DisplayMode  mode) :currentTime(0){
 }
 
 Window::~Window() {
+   av_freep(&blackFrame->data);
+  av_frame_free(&blackFrame);
   SDL_DestroyTexture(texture);
   SDL_DestroyRenderer(m_renderer);
   SDL_DestroyWindow(m_window);

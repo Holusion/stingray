@@ -5,8 +5,8 @@
 #include  <deque>
 #include  <mutex>
 
-#include "constants.h"
 #include "../config.h"
+#include "debug.h"
 using namespace std;
 //! @namespace  memory
 //! @brief Memory namespace
@@ -38,7 +38,22 @@ template <class T> class  DeBuffer {
                                     backData(),
                                     d(d),
                                     maxSize((size < CAPACITY) ? size : CAPACITY) {};
-    virtual ~DeBuffer<T>(void){};
+    ~DeBuffer<T>(void){
+      //Clear buffers
+      while (!data.empty()){
+        if (std::is_pointer<T>()){
+          delete data.back();
+        }
+        data.pop_back();
+      }
+        
+      while (!backData.empty()){
+        if (std::is_pointer<T>()){
+          delete backData.back();
+        }
+        backData.pop_back();
+      }
+    };
 
   public:
     std::size_t size() const{return data.size();}
@@ -88,7 +103,7 @@ T DeBuffer<T>::forward(void){
   backData.push_front(std::move(data.front()));
   data.pop_front(); //Delete first after it has been moved
   if (maxSize < backData.size()) {
-    if (std::is_pointer<T>()){ //inline constexpr i cpp17
+    if (std::is_pointer<T>()){
       delete backData.back();
     }
     backData.pop_back();

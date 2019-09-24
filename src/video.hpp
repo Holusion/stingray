@@ -31,7 +31,7 @@ namespace  entities {
       std::thread th;
 
     public:
-      Video(const char* file,int width,int height, std::size_t start_frame_number = 0); //!< Can throw AVException
+      Video(const std::string file,int width,int height, std::size_t start_frame_number = 0); //!< Can throw AVException
       ~Video();
       static void decode_loop (entities::Video* video);
       void alpha_add(std::uint8_t a){

@@ -109,6 +109,7 @@ state_t EventManager::update(){
   #ifdef ENABLE_MODULES
   for(unsigned i =0; i < modules.size(); i++) {
     if(modules[i].update != NULL){
+      //FIXME : no timeout means we can easily get completely deadlocked by any module
       modules[i].update(modules[i].listener);
     }
     s.axis += modules[i].listener->getAxis();
@@ -132,10 +133,6 @@ state_t EventManager::update(){
   }
   lastAxis = s.axis;
   #endif
-  /*
-  if(s.quit){
-    std::cout<<"Exit"<<std::endl;
-  } //*/
   quit = s.quit;
   return s;
 }

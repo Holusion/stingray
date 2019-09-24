@@ -13,6 +13,10 @@ extern "C" {
 #include  "gtest/gtest.h"
 #endif
 #include "debug.h"
+
+//Special super-verbose check for frames alloc/free
+//#define VERBOSE_ALLOC 1
+
 //! @namespace  entities
 //! @brief  Data namespace
 namespace  entities {
@@ -32,7 +36,9 @@ namespace  entities {
 #endif
 
     public:
-      //static int alloc;
+    #ifdef VERBOSE_ALLOC
+      static int alloc;
+    #endif
       VideoFrame();
       //! @brief Constructor from libav/ffmpeg
       VideoFrame(AVFrame* base);

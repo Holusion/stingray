@@ -44,8 +44,7 @@ stingray_SOURCES= src/launcher.cpp \
   src/window.cpp
 
 ### Main Program header files ###
-noinst_HEADERS =   src/constants.h \
-  src/debug.h \
+noinst_HEADERS =  src/debug.h \
   src/dbus/dbus.hpp \
   src/dbus/vtable.hpp \
   src/exceptions/sdl_exception.hpp \

@@ -1,5 +1,4 @@
 #include "../config.h"
-#include  "constants.h"
 #include  "debug.h"
 #include  "window.hpp"
 #include  "video_decoder.hpp"
@@ -36,16 +35,18 @@ void run(int argc, char ** args){
     video.reset();
   }
   state_t s = manager.update();
+
+  //Main thread event loop
   while(!s.quit){
     s = manager.update();
     std::string next_video = bus.pop_play_next();
-    if(next_video != ""){
-      std::cout<<"Next video : "<<next_video<<std::endl;
+    video = display.getSource();
+    if(next_video != "" && video->filename != next_video){
+      DEBUG_LOG("Next video : "<<next_video<<std::endl);
       #ifdef ENABLE_SEAMLESS
-        video = display.getSource();
-          video = std::make_shared<Video>(next_video.c_str(), display.getWidth(), display.getHeight(), ((video)?video->buffer.index() : 0));
+        video = std::make_shared<Video>(next_video, display.getWidth(), display.getHeight(), ((video)?video->buffer.index() : 0));
       #else
-        video = std::make_shared<Video>(next_video.c_str(), display.getWidth(), display.getHeight(), 0);
+        video = std::make_shared<Video>(next_video, display.getWidth(), display.getHeight(), 0);
       #endif
       display.setSource(video);
       video.reset();

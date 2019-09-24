@@ -1,24 +1,31 @@
 #include "video_frame.hpp"
 using namespace  entities;
-//int VideoFrame::alloc = 0;
+#ifdef VERBOSE_ALLOC
+  int VideoFrame::alloc = 0;
+#endif
 
-VideoFrame::VideoFrame() : m_frame(nullptr) {
-  //alloc++;
-  //DEBUG_LOG("Allocated video frames "<<alloc<<std::endl);
+
+VideoFrame::VideoFrame() : m_frame(av_frame_alloc()) {
+  #ifdef VERBOSE_ALLOC
+    alloc++;
+    DEBUG_LOG("Allocated video frames "<<alloc<<std::endl);
+  #endif
 };
 
 VideoFrame::VideoFrame(AVFrame* base) {
-  //alloc++;
-  //DEBUG_LOG("Allocated video frames "<<alloc<<std::endl);
+  #ifdef VERBOSE_ALLOC
+    alloc++;
+    DEBUG_LOG("Allocated video frames "<<alloc<<std::endl);
+  #endif
   m_frame = av_frame_clone(base);
-  av_frame_unref(base);
 };
 
 VideoFrame::~VideoFrame(){
-  //alloc--;
-  //DEBUG_LOG("Destructor. Allocated frames : "<<alloc<<std::endl);
-  if (m_frame != nullptr)
-    av_frame_free(&m_frame);
+  #ifdef VERBOSE_ALLOC
+    alloc--;
+    DEBUG_LOG("Destructor. Allocated frames : "<<alloc<<std::endl);
+  #endif
+  av_frame_free(&m_frame);
 };
 
 AVFrame*  VideoFrame::frame() { return m_frame; }

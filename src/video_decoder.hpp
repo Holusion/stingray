@@ -10,7 +10,7 @@
 #include  "exceptions/av_exception.hpp"
 #include  <algorithm>
 #include  "video.hpp"
-#include  "constants.h"
+#include "../config.h"
 //! @namespace  decoder
 //! @brief  Decoder Video namespace
 namespace  decoder {
@@ -27,7 +27,6 @@ namespace  decoder {
       ~VideoDecoder();
 
     private:
-      AVFrame* tmpframe;
 
       //! @brief Update m_decodeArray after write
       void        updateVideoBuffer(std::size_t writes); //!< For now we always clean the full array
