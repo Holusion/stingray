@@ -15,7 +15,7 @@ extern "C" {
 
 namespace  core {
   #ifdef ENABLE_CROSSFADE
-    #define CROSSFADE_SPEED 5
+    #define CROSSFADE_SPEED 10
   #endif
 
   class  Window{
@@ -30,7 +30,6 @@ namespace  core {
       bool shown;
       SDL_Rect position;
       FrameTimer timer;
-      float fadeMultiplier = 0.005;
       int targetTime;
       int currentTime;
     public:
@@ -46,21 +45,5 @@ namespace  core {
       void present();
   };
 
-  class  Display{
-    private:
-      std::shared_ptr<entities::Video> currentSrc;
-      std::shared_ptr<entities::Video> nextSrc;
-      std::unique_ptr<Window> win;
-    public:
-      Display();
-      ~Display();
-      SDL_DisplayMode getMode();
-      int  getWidth();
-      int  getHeight();
-      bool active();
-      void setSource(std::shared_ptr<entities::Video>&);
-      std::shared_ptr<entities::Video> getSource();
-      void draw();
-  };
 }
 #endif

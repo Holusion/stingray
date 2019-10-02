@@ -61,3 +61,6 @@ Could be made "more static" by using work on fully-static binary : https://githu
 
 final configure : 
     ./configure --disable-ffplay --extra-libs="-lpthread -lm" --pkg-config-flags="--static" --enable-static --enable-gpl --enable-vaapi --enable-libx264
+
+### Testing dbus
+

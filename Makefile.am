@@ -41,7 +41,8 @@ stingray_SOURCES= src/launcher.cpp \
   src/video_decoder.cpp \
   src/decoder_context.cpp \
   src/video_frame.cpp \
-  src/window.cpp
+  src/window.cpp \
+  src/display.cpp
 
 ### Main Program header files ###
 noinst_HEADERS =  src/debug.h \
@@ -55,7 +56,7 @@ noinst_HEADERS =  src/debug.h \
   src/events/eventListener.hpp \
   src/debuffer.hpp \
   src/video_frame.hpp \
-  src/frametimer.hpp src/video.hpp src/video_decoder.hpp src/decoder_context.hpp src/window.hpp
+  src/frametimer.hpp src/video.hpp src/video_decoder.hpp src/decoder_context.hpp src/window.hpp src/display.hpp
 
 ### Check Program flags ###
 test_stingray_CPPFLAGS = -DFIXTURES=\"$(srcdir)/test\"  -DTESTS -I$(top_srcdir)/src -isystem $(top_srcdir)/vendor/gtest/include \

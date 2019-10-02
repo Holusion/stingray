@@ -5,7 +5,8 @@
 #include  "gtest/gtest.h"
 #endif
 
-#include  <array>
+#include <vector>
+#include <memory>
 #include  <cstddef>
 #include  "exceptions/av_exception.hpp"
 #include  <algorithm>
@@ -20,7 +21,7 @@ namespace  decoder {
   class  VideoDecoder {
 
     private:
-      std::array<entities::VideoFrame*, DECODE_SIZE>  m_decodeArray;
+      std::vector<std::shared_ptr<entities::VideoFrame>>  decoded_vector;
       DecoderContext&                                 m_context;
     public:
       VideoDecoder(DecoderContext& context);
@@ -28,7 +29,6 @@ namespace  decoder {
 
     private:
 
-      //! @brief Update m_decodeArray after write
       void        updateVideoBuffer(std::size_t writes); //!< For now we always clean the full array
 
       void        seek(unsigned int position);
@@ -37,7 +37,7 @@ namespace  decoder {
       void        nextFrame(AVFrame* frame); //!< Can Throw AVException
 
       //! @brief Check where we need to decode from
-      int         getDecodeIndex(const DeBuffer<entities::VideoFrame*>& buffer);
+      int         getDecodeIndex(const DeBuffer<std::shared_ptr<entities::VideoFrame>>& buffer);
 
 
 #ifdef  TESTS      //! @brief Some Google Tests
@@ -54,9 +54,8 @@ namespace  decoder {
     public:
       //! @brief Decode one array of frame
       void  decode(unsigned int next);
-
       //! @brief Decode and write one array into the buffer
-      void  decodeAndWrite(DeBuffer<entities::VideoFrame*>& buffer);
+      void  decodeAndWrite(DeBuffer<std::shared_ptr<entities::VideoFrame>>& buffer);
   };
 }
 #endif

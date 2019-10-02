@@ -5,96 +5,6 @@ using namespace  std::chrono;
 using namespace  core;
 
 
-Display::Display(){
-  if(SDL_Init(SDL_INIT_VIDEO) !=0)
-    throw SDLException("Could not initialize SDL");
-
-  SDL_GL_SetAttribute( SDL_GL_CONTEXT_MAJOR_VERSION, 3);
-  SDL_GL_SetAttribute( SDL_GL_CONTEXT_MINOR_VERSION, 1 );
-
-}
-
-Display::~Display(){
-  std::cout<<"SDL quit"<<std::endl;
-  SDL_Quit();
-}
-
-SDL_DisplayMode Display::getMode(){
-  SDL_DisplayMode  mode;
-  int display_count;
-    if ((display_count = SDL_GetNumVideoDisplays()) < 1) {
-    throw SDLException("SDL_GetNumVideoDisplays");
-  }else if (SDL_GetCurrentDisplayMode(0, &mode) != 0) {
-    throw SDLException("SDL_GetDisplayMode failed");
-  }
-  SDL_Log("SDL_GetDisplayMode(0, 0, &mode):\t\t%i bpp\t%i x %i",SDL_BITSPERPIXEL(mode.format), mode.w, mode.h);
-  return mode;
-}
-
-int  Display::getWidth() {
-  return getMode().w;
-}
-
-int  Display::getHeight() {
-  return getMode().h;
-}
-
-bool Display::active(){
-  return currentSrc || nextSrc; //Force to bool
-}
-
-void Display::draw(){
-  if(!active()){
-    win.reset();
-    return;
-  }else if(!win && active()){
-    win = std::unique_ptr<Window>(new Window(getMode()));
-  }
-  win->clear();
-  #ifdef ENABLE_CROSSFADE
- 
-  if( this->nextSrc){
-    if (0 == this->currentSrc->alpha || UINT8_MAX == this->nextSrc->alpha){
-      this->currentSrc = this->nextSrc;
-      this->nextSrc.reset();
-    }else{
-      this->currentSrc->alpha_sub(CROSSFADE_SPEED);
-      this->currentSrc->buffer.forward()->frame();
-      //this->nextSrc->alpha_add(CROSSFADE_SPEED);
-      //win->draw(*this->nextSrc, true);
-    }
-  }else if ( this->currentSrc->alpha < UINT8_MAX){
-    this->currentSrc->alpha_add(CROSSFADE_SPEED);
-  }
-  win->draw(*this->currentSrc);
-  #endif
-  win->present();
-}
-
-void Display::setSource(std::shared_ptr<entities::Video>& new_source){
-  #ifdef ENABLE_CROSSFADE
-    if(this->currentSrc){
-      this->nextSrc = new_source; //Reference the new source so it won't get deleted
-    }else{
-      this->currentSrc = new_source;
-    }
-  #else
-    this->currentSrc = new_source;
-  #endif
-}
-
-
-
-std::shared_ptr<entities::Video> Display::getSource(){
-  if(this->currentSrc){
-    return std::shared_ptr<entities::Video>(this->currentSrc);
-  }else{
-    return nullptr;
-  }
-  
-}
-
-
 
 Window::Window(SDL_DisplayMode  mode) :currentTime(0), targetTime(0){
   int display_count = 0, display_index = 0, mode_index = 0;
@@ -163,7 +73,6 @@ Window::~Window() {
 
 void Window::clear(){
   SDL_RenderClear(m_renderer);
-
 }
 void Window::present(){
   SDL_RenderPresent(m_renderer);
@@ -211,23 +120,21 @@ void  Window::draw(entities::Video& video) {
   }
 
   if(0 < (targetTime - currentTime) ) {
-    frame = lastFrame;
-    if(0 < video.buffer.size() && video.pause && video.state == entities::in && video.alpha <= 1) {
-      frame = video.buffer.forward()->frame();
-      lastFrame = frame;
-    } else {
-      currentTime += SDL_GetTicks() * (video.speed / 25.0); // 25 FPS
-    }
+    //Another frame is not yet due
+    if(0 < video.buffer.size()) frame = video.buffer[0]->frame();
+    else frame = lastFrame;
+    currentTime += SDL_GetTicks() * (video.speed / 25.0); // 25 FPS
   } else if ((0 < video.buffer.size() && !video.pause)) {
     frame = video.buffer.forward()->frame();
-    lastFrame = frame;
     currentTime = 0;
     targetTime = currentTime + waitingTime;
   }else{
-    frame = lastFrame;
+    if(0 < video.buffer.size()) frame = video.buffer[0]->frame();
+    else frame = lastFrame;
     currentTime = 0;
     targetTime = currentTime + waitingTime;
   }
   //! Draw
   draw(frame, video.alpha);
+  lastFrame = frame;
 }

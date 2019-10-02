@@ -60,3 +60,23 @@ void Video::decode_loop (entities::Video* video){
     std::cerr << "Decode Thread -> " << e.what() << std::endl;
   }
 }
+
+void Video::alpha_add(std::uint8_t a){
+  std::uint8_t res = this->alpha + a;
+  //DEBUG_LOG("Alpha Add to "<<std::to_string(res)<<std::endl);
+  if(res < this->alpha){
+    this->alpha = UINT8_MAX;
+  }else{
+    this->alpha = res;
+  }
+}
+void Video::alpha_sub(std::uint8_t a){
+  std::uint8_t res = this->alpha - a;
+  //DEBUG_LOG("Alpha Sub to "<<std::to_string(res)<<std::endl);
+  if(this->alpha < res){
+    //Check for underflow
+    this->alpha = 0;
+  }else{
+    this->alpha = res;
+  }
+}

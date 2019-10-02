@@ -169,4 +169,5 @@ enum AVPixelFormat DecoderContext::get_pix_format(AVCodecContext *ctx, const enu
     DEBUG_LOG("choosing pixel format : "<<av_get_pix_fmt_name(pix_fmts[i])<<std::endl);
     return pix_fmts[i];
   }
+  return pix_fmts[0];
 }

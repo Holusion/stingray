@@ -1,6 +1,6 @@
 #include "../config.h"
 #include  "debug.h"
-#include  "window.hpp"
+#include  "display.hpp"
 #include  "video_decoder.hpp"
 #include  "video_frame.hpp"
 #include  "events/event_manager.hpp"
@@ -41,24 +41,20 @@ void run(int argc, char ** args){
     s = manager.update();
     std::string next_video = bus.pop_play_next();
     video = display.getSource();
-    if(next_video != "" && video->filename != next_video){
+    if(next_video != "" &&(! video || video->filename != next_video)){
       DEBUG_LOG("Next video : "<<next_video<<std::endl);
       #ifdef ENABLE_SEAMLESS
-        video = std::make_shared<Video>(next_video, display.getWidth(), display.getHeight(), ((video)?video->buffer.index() : 0));
+        std::shared_ptr<entities::Video> newVideo = std::make_shared<Video>(next_video, display.getWidth(), display.getHeight(), ((video)?video->buffer.index() : 0));
       #else
-        video = std::make_shared<Video>(next_video, display.getWidth(), display.getHeight(), 0);
+        std::shared_ptr<entities::Video> newVideo = std::make_shared<Video>(next_video, display.getWidth(), display.getHeight(), 0);
       #endif
-      display.setSource(video);
-      video.reset();
+      display.setSource(newVideo);
     } //*/
-
-    video = display.getSource();
     if(video){
       video->pause = (s.axis == 0) ? true : false;
       video->speed = (video->context.fps *std::abs(s.axis))/4;
       if ( (s.axis < 0  && video->buffer.direction() == Direction::NORMAL)
           || (0 < s.axis  && video->buffer.direction() == Direction::REVERSE)) {
-
         video->buffer.swap();
       }
     }

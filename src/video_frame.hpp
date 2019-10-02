@@ -5,7 +5,6 @@
 
 #ifndef  VIDEO_FRAME_HPP
 #define  VIDEO_FRAME_HPP
-
 extern "C" {
   #include  <libavformat/avformat.h>
 }

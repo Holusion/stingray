@@ -3,16 +3,11 @@
 using namespace  decoder;
 
 VideoDecoder::VideoDecoder(DecoderContext& context): m_context(context) {
-  for (unsigned int i = 0; i < DECODE_SIZE; ++i)
-    m_decodeArray[i] = nullptr;
+
 }
 
 VideoDecoder::~VideoDecoder(){
-  for (unsigned int i = 0; i < DECODE_SIZE; ++i) {
-    if(m_decodeArray[i] != nullptr){
-      delete m_decodeArray[i];
-    }
-  }
+
 }
 
 
@@ -25,7 +20,7 @@ void  VideoDecoder::updateVideoBuffer(std::size_t  writes) {
   }
 }
 
-int VideoDecoder::getDecodeIndex(const DeBuffer<entities::VideoFrame*>& buffer){
+int VideoDecoder::getDecodeIndex(const DeBuffer<std::shared_ptr<entities::VideoFrame>>& buffer){
   int          decodeFrom;
 
   if (buffer.direction() == Direction::NORMAL){
@@ -44,23 +39,25 @@ int VideoDecoder::getDecodeIndex(const DeBuffer<entities::VideoFrame*>& buffer){
   return decodeFrom;
 }
 
-void  VideoDecoder::decodeAndWrite(DeBuffer<entities::VideoFrame*> & buffer) {
+void  VideoDecoder::decodeAndWrite(DeBuffer<std::shared_ptr<entities::VideoFrame>> & buffer) {
   Direction  direction = buffer.direction();
-
+  std::vector<std::shared_ptr<entities::VideoFrame>>::iterator it;
   //! Decode
   decode(getDecodeIndex(buffer));
+
   if (direction == Direction::REVERSE){
-    std::reverse(m_decodeArray.begin(), m_decodeArray.end());
+    std::reverse(decoded_vector.begin(), decoded_vector.end());
   }
-  //! Update decodeArray
-  for (std::size_t i=0; i <  m_decodeArray.size(); i++){
-    if (!buffer.write(m_decodeArray[i], direction)){
-      std::cout<<"Out of capacity"<<std::endl;
-    }else{
-      m_decodeArray[i] = nullptr;
+  for(it = decoded_vector.begin(); it != decoded_vector.end(); ++it){
+    if(!buffer.write(*it, direction)){
+      DEBUG_LOG("OUT OF CAPACITY"<<std::endl);
+      break;
     }
   }
-
+  decoded_vector.erase(
+    decoded_vector.begin(),
+    it
+  );
 }
 
 void  VideoDecoder::decode(unsigned int current) {
@@ -70,13 +67,10 @@ void  VideoDecoder::decode(unsigned int current) {
     seek(current);
 
   //! Fill decodeArray with VideoFrame
-  for (unsigned int i = 0; i < DECODE_SIZE; ++i) {
-    if(m_decodeArray[i] != nullptr){
-      DEBUG_LOG("Pre-initialized decodeArray field"<<std::endl);
-      delete m_decodeArray[i];
-    }
-    m_decodeArray[i] = new entities::VideoFrame();
-    nextFrame(m_decodeArray[i]->frame());
+  while(decoded_vector.size() < DECODE_SIZE){
+
+    decoded_vector.push_back(std::shared_ptr<entities::VideoFrame>(new entities::VideoFrame()));
+    nextFrame(decoded_vector.back()->frame());
   }
 }
 

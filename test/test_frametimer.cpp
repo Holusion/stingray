@@ -28,6 +28,12 @@ TEST_F(FrameTimerTests, Calculate_Waiting_Time_High_Framerates) {
   timer.update(33);
   ASSERT_EQ(0,timer.getWaitingTime(66)); //return 0 while on sync
 }
+TEST_F(FrameTimerTests, Have_Minimum_Refresh_Rate){
+  FrameTimer timer;
+  timer.setTargetSpeed(0);
+  timer.update(40);
+  ASSERT_EQ(0, timer.getWaitingTime(80)); //Ensure a minimum refresh rate of 30fps
+}
 /* DIsabled : too empirical
 TEST_F(FrameTimerTests, Calculate_Skip_Frames) {
   FrameTimer timer;

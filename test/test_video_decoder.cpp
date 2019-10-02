@@ -22,8 +22,7 @@ namespace  decoder {
     ASSERT_NO_THROW(m_decoder.decode(0));
 
     for (unsigned int i = 0; i < DECODE_SIZE; i++) {
-
-      const AVFrame* frame = m_decoder.m_decodeArray[i]->frame();
+      const AVFrame* frame = m_decoder.decoded_vector[i]->frame();
       expectValidFrame(frame);
       EXPECT_EQ(i, getFrameNumber(frame));
     }
@@ -35,8 +34,7 @@ namespace  decoder {
     ASSERT_NO_THROW(m_decoder.decode(start));
 
     for (int i = 1; i < DECODE_SIZE; i++) {
-
-      const AVFrame* frame = m_decoder.m_decodeArray[i]->frame();
+      const AVFrame* frame = m_decoder.decoded_vector[i]->frame();
 
       expectValidFrame(frame);
       EXPECT_EQ((i + start)%20, getFrameNumber(frame));
@@ -51,7 +49,7 @@ namespace  decoder {
 
     for (int i = 0; i < DECODE_SIZE; ++i) {
 
-      const AVFrame* frame = m_decoder.m_decodeArray[i]->frame();
+      const AVFrame* frame = m_decoder.decoded_vector[i]->frame();
 
       expectValidFrame(frame);
       EXPECT_EQ((count++) % 20, getFrameNumber(frame));

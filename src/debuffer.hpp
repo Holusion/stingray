@@ -4,6 +4,7 @@
 
 #include  <deque>
 #include  <mutex>
+#include <type_traits>
 
 #include "../config.h"
 #include "debug.h"
@@ -20,7 +21,6 @@ template <class T> class  DeBuffer {
   typedef deque<T> buffer_t;
 
   protected:
-
     std::mutex         m;
     std::size_t       current;
     const unsigned int count; //to know when we should round up
@@ -38,22 +38,7 @@ template <class T> class  DeBuffer {
                                     backData(),
                                     d(d),
                                     maxSize((size < CAPACITY) ? size : CAPACITY) {};
-    ~DeBuffer<T>(void){
-      //Clear buffers
-      while (!data.empty()){
-        if (std::is_pointer<T>()){
-          delete data.back();
-        }
-        data.pop_back();
-      }
-        
-      while (!backData.empty()){
-        if (std::is_pointer<T>()){
-          delete backData.back();
-        }
-        backData.pop_back();
-      }
-    };
+    ~DeBuffer<T>(void){};
 
   public:
     std::size_t size() const{return data.size();}
@@ -66,15 +51,15 @@ template <class T> class  DeBuffer {
     bool write(T item);
     T forward();
     void forwardIndex();
-    T get(unsigned int i);
-    T getBackData(unsigned int i);
+    T &get(const unsigned int i);
+    T getBackData(const unsigned int i);
+    T &operator[] (const int); 
     void clean();
 };
 
 //Write with a direction, to allow for write-after-swap
 template <class T>
 bool DeBuffer<T>::write(T item, Direction write_d){
-  // Lock Mutex RAII style
   std::lock_guard<std::mutex> lock(m);
   std::deque<T>& queue = (write_d == d)? data: backData;
   if (maxSize <= queue.size()){
@@ -100,12 +85,9 @@ T DeBuffer<T>::forward(void){
     // Unlock mutex and block until e have a frame
   }
 
-  backData.push_front(std::move(data.front()));
+  backData.push_front(data.front());
   data.pop_front(); //Delete first after it has been moved
   if (maxSize < backData.size()) {
-    if (std::is_pointer<T>()){
-      delete backData.back();
-    }
     backData.pop_back();
   }
   forwardIndex();
@@ -130,17 +112,25 @@ void  DeBuffer<T>::swap(void) {
 }
 
 template <class T>
-T DeBuffer<T>::get(unsigned int i) {
+T &DeBuffer<T>::get(const unsigned int i) {
+  std::lock_guard<std::mutex> lock(m);
   return data[i];
 }
 
 template <class T>
-T DeBuffer<T>::getBackData(unsigned int i) {
+T DeBuffer<T>::getBackData(const unsigned int i) {
+  std::lock_guard<std::mutex> lock(m);
   return backData[i];
 }
 
 template <class T>
+T &DeBuffer<T>::operator[](const int index) {
+  return get(index);
+}
+
+template <class T>
 void DeBuffer<T>::clean() {
+  std::lock_guard<std::mutex> lock(m);
   buffer_t().swap(data);
   buffer_t().swap(backData);
 }
