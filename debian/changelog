@@ -1,4 +1,4 @@
-stingray (1.0.0) UNRELEASED; urgency=medium
+stingray (1.0.0) testing; urgency=medium
 
   [ yann ]
   * move fade in / fade out in render process
@@ -6,6 +6,7 @@ stingray (1.0.0) UNRELEASED; urgency=medium
 
   [ Sebastien Dumetz ]
   * Upgrade ffmpeg to v58 to use vaapi hwaccel when available
+  * pre-release version for Egger
 
  -- yann <y.dubois@holusion.com>  Wed, 06 Jun 2018 11:29:35 +0100
 

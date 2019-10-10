@@ -26,7 +26,7 @@ Window::Window(SDL_DisplayMode  mode) :currentTime(0), targetTime(0){
   m_renderer = SDL_CreateRenderer(
       m_window,
       -1,
-      SDL_RENDERER_ACCELERATED);
+      SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
   if (m_renderer == NULL)
     throw SDLException( "SDL_CreateRenderer");
   //SDL_SetRenderDrawBlendMode(m_renderer, SDL_BLENDMODE_ADD);
