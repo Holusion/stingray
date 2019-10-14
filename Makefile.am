@@ -4,6 +4,7 @@ SUBDIRS = doc vendor src test data
 ACLOCAl_AMFLAGS = -I vendor/libltdl/m4 -I m4
 ### Binaries ###
 bin_PROGRAMS = stingray
+lib_LTLIBRARIES = libstingraysocket.la
 noinst_PROGRAMS = benchmark
 check_PROGRAMS = test_stingray
 
@@ -20,7 +21,7 @@ FFMPEG_ASSEMBLIES = ffmpeg/libavformat/libavformat.a \
 ### Main Program flags ###
 
 
-stingray_CPPFLAGS = -Wall -Wextra -I$(top_srcdir)/vendor -I$(top_srcdir)/ffmpeg -I$(top_srcdir)/src -g \
+stingray_CPPFLAGS = -Wall -Wextra -I$(top_srcdir)/vendor -I$(top_srcdir)/src \
                   $(systemd_CFLAGS) $(SDL2_CFLAGS) $(FFMPEG_CFLAGS) \
                   $(LTDLINCL)
 
@@ -60,7 +61,7 @@ noinst_HEADERS =  src/debug.h \
 
 ### Check Program flags ###
 test_stingray_CPPFLAGS = -DFIXTURES=\"$(srcdir)/test\"  -DTESTS -I$(top_srcdir)/src -isystem $(top_srcdir)/vendor/gtest/include \
-                       $(SDL2_CFLAGS) $(FFMPEG_CFLAGS) -I$(top_srcdir)/ffmpeg
+                       $(SDL2_CFLAGS) $(FFMPEG_CFLAGS)
 
 test_stingray_LDFLAGS =  -lpthread -lx264 -llzma -lm -lz $(FFMPEG_LIBS)
 test_stingray_LDADD =  $(top_srcdir)/vendor/gtest/libgtest.a
@@ -82,6 +83,13 @@ benchmark_SOURCES = test/benchmark_decodeSpeed.cpp \
   src/frametimer.cpp src/video_decoder.cpp src/decoder_context.cpp src/video.cpp src/video_frame.cpp
 
 benchmark_CPPFLAGS = -Wall -Wextra $(FFMPEG_CFLAGS) \
-                    -I$(top_srcdir)/vendor -I$(top_srcdir)/ffmpeg -I$(top_srcdir)/src
+                    -I$(top_srcdir)/vendor -I$(top_srcdir)/src
 
 benchmark_LDFLAGS	= -lpthread -lpthread -lx264 -llzma -lm -lz $(x11_LIBS) $(FFMPEG_LIBS) -export-dynamic
+
+
+libstingraysocket_la_SOURCES= src/modules/libstingraysocket.cpp
+# 
+libstingraysocket_la_CPPFLAGS = -fPIC -DPIC -shared -Wall -Wextra -I$(top_srcdir)/vendor -I$(top_srcdir)/src
+
+libstingraysocket_la_LDFLAGS	= -module -avoid-version -export-dynamic
