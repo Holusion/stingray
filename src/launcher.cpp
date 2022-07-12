@@ -39,7 +39,11 @@ void run(int argc, char ** args){
   //Main thread event loop
   while(!s.quit){
     s = manager.update();
+    #ifdef ENABLE_DBUS
     std::string next_video = bus.pop_play_next();
+    #else
+    std::string next_video = "";
+    #endif
     video = display.getSource();
     if(next_video != "" &&(! video || video->filename != next_video)){
       DEBUG_LOG("Next video : "<<next_video<<std::endl);

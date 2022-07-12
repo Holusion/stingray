@@ -71,7 +71,7 @@ Controller::Controller(int port=3004){
 
     setsockopt(fd, SOL_SOCKET, SO_REUSEADDR, &one, sizeof(one));
 
-    err = bind(fd, (struct sockaddr *)&addr, sizeof(addr));
+    err = bind((int)fd, (struct sockaddr *)&addr, sizeof(addr));
     if (err < 0){
       std::cout<<"Error binding "<<port<<": "<<strerror(-err)<<std::endl;
     }

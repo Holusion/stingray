@@ -1,0 +1,62 @@
+name: build package
+on:
+  push:
+jobs:
+  build:
+    name: Universal build ${{matrix.arch}}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - arch: amd64
+          - arch: armhf
+    env: 
+      ARCH: ${{ matrix.arch }}
+    steps:
+      - name: checkout
+        uses: actions/checkout@v2
+        with:
+          lfs: true
+      - name: install build tools
+        run: >
+          sudo apt-get -qqy install
+          build-essential 
+          autoconf 
+          automake
+          libtool
+      
+      - name: install crosscompilation tools
+        if: ${{ matrix.arch == 'armhf' }}
+        run: |
+          sudo dpkg --add-architecture armhf
+          sudo apt-get -qqy update
+          sudo apt-get -qqy install gcc-arm-linux-gnueabihf g++-arm-linux-gnueabihf qemu-user qemu-user-binfmt
+          echo 'CC=arm-linux-gnueabihf-gcc' >> $GITHUB_ENV
+          echo 'CXX=arm-linux-gnueabihf-g++' >> $GITHUB_ENV
+          echo 'QEMU_LD_PREFIX=/usr/arm-linux-gnueabihf' >> $GITHUB_ENV
+      - name: install libraries
+        run: >
+          sudo apt-get -qqy install
+          libavcodec-dev:${{ matrix.arch }}
+          libavformat-dev:${{ matrix.arch }}
+          libavutil-dev:${{ matrix.arch }}
+          libsdl2-dev:${{ matrix.arch }}
+          libsystemd-dev:${{ matrix.arch }}
+          libx264-dev:${{ matrix.arch }}
+          liblzma-dev:${{ matrix.arch }}
+          
+          
+      - name: configure
+        run: |
+          CPPFLAGS=-DDEBUG ./configure --enable-seamless --enable-dbus --enable-capacity=100 --enable-crossfade --disable-modules
+      - name: make
+        run: |
+          make
+
+      - uses: actions/upload-artifact@v2
+        with:
+          name: AppImages
+          path: |
+            stingray
+          retention-days: 1

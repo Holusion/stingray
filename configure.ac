@@ -37,6 +37,8 @@ PKG_CHECK_MODULES(avcodec, libavcodec >= 58)
 PKG_CHECK_MODULES(avformat, libavformat >= 58)
 PKG_CHECK_MODULES(avutil, libavutil >= 56)
 PKG_CHECK_MODULES(systemd, libsystemd)
+PKG_CHECK_MODULES(x264, x264)
+PKG_CHECK_MODULES(lzma, liblzma)
 
 # Checks for libraries.
 AC_CHECK_LIB([SDL2], [SDL_PollEvent])

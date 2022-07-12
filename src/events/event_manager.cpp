@@ -116,10 +116,12 @@ state_t EventManager::update(){
     s.quit = (modules[i].listener->getQuit() != 0 || quit)?true:false; //prevent quit unsetting
     //currentState = modules[i].listener->getState();
   }
-  #endif
   if( modules.size() == 0 ){
     s.axis = events.getAxis(); //keyboard is ignored if any other input is active.
   }
+  #else
+    s.axis = events.getAxis();
+  #endif
   s.quit = s.quit || (events.getQuit() != 0);
   #ifdef ENABLE_AUTOEXIT
   if (s.axis == lastAxis){
