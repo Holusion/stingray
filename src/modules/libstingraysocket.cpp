@@ -51,7 +51,7 @@ std::atomic<int> Controller::axis(4);
 std::atomic<int> Controller::quit(0);
 
 std::mutex Controller::m;
-std::regex Controller::re = std::regex("GET /(d[-0-9.]*|QUIT)",std::regex::ECMAScript);
+std::regex Controller::re = std::regex("GET /([md][+-]?[0-9.]+|QUIT)",std::regex::ECMAScript);
 std::vector<int>Controller::clients = std::vector<int>();
 
 Controller::Controller(int port=3004){
@@ -71,7 +71,7 @@ Controller::Controller(int port=3004){
 
     setsockopt(fd, SOL_SOCKET, SO_REUSEADDR, &one, sizeof(one));
 
-    err = bind(fd, (struct sockaddr *)&addr, sizeof(addr));
+    err = bind((int)fd, (struct sockaddr *)&addr, sizeof(addr));
     if (err < 0){
       std::cout<<"Error binding "<<port<<": "<<strerror(-err)<<std::endl;
     }

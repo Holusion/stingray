@@ -20,10 +20,6 @@ Makefile
 /test_stingray
 /benchmark
 
-
-vendor/libltdl
-
-
 debian/stingray
 debian/*.substvars
 debian/.debhelper
@@ -33,24 +29,17 @@ debian/tmp
 debian/stingray-module*
 
 # http://www.gnu.org/software/automake
-
-Makefile.in
-
 # http://www.gnu.org/software/autoconf
 
 /autom4te.cache
-/aclocal.m4
 /compile
-/config.h.in
 /config.h
 /config.status
-/configure
 /configure.scan
 /depcomp
 /install-sh
 /missing
 /stamp-h1
-/build-aux
 /libtool
 
 # Visual Studio code
