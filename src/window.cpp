@@ -100,7 +100,6 @@ void Window::draw(AVFrame* frame, std::uint8_t opacity){
 void  Window::draw(entities::Video& video) {
   int waitingTime;
   AVFrame*              frame;
-
   timer.setTargetSpeed(video.speed);
   for(int i=0;i<timer.getSkipCount();i++){
     if(video.buffer.size() < 2){
@@ -109,30 +108,21 @@ void  Window::draw(entities::Video& video) {
     }
     video.buffer.forward();
   }
-  
   waitingTime = timer.getWaitingTime(SDL_GetTicks());
   if(waitingTime == 0){
     DEBUG_LOG("Display too slow"<<std::endl);
   }else if(waitingTime < 10){ //approximate granularity of the wait function
     SDL_Delay(1);
   }else{
+    //DEBUG_LOG("DELAY "<<waitingTime<<std::endl);
     SDL_Delay(waitingTime - 10);
   }
 
-  if(0 < (targetTime - currentTime) ) {
-    //Another frame is not yet due
-    if(0 < video.buffer.size()) frame = video.buffer[0]->frame();
-    else frame = lastFrame;
-    currentTime += SDL_GetTicks() * (video.speed / 25.0); // 25 FPS
-  } else if ((0 < video.buffer.size() && !video.pause)) {
+  if ((0 < video.buffer.size() && !video.pause)) {
     frame = video.buffer.forward()->frame();
-    currentTime = 0;
-    targetTime = currentTime + waitingTime;
   }else{
     if(0 < video.buffer.size()) frame = video.buffer[0]->frame();
     else frame = lastFrame;
-    currentTime = 0;
-    targetTime = currentTime + waitingTime;
   }
   //! Draw
   draw(frame, video.alpha);

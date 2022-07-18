@@ -11,10 +11,15 @@ int FrameTimer::update(uint32_t ticks){
   last = ticks;
   return (int)mean;
 }
+/**
+ * Target speed in frames-per-second
+ */
 void FrameTimer::setTargetSpeed(int speed){
   targetSpeed = (uint32_t)speed;
 }
-
+/**
+ * Time to wait before presenting the next frame after skips happened
+ */
 int FrameTimer::getWaitingTime(uint32_t ticks){
   int waitTimer;
   update(ticks);

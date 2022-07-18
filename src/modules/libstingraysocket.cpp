@@ -51,7 +51,7 @@ std::atomic<int> Controller::axis(4);
 std::atomic<int> Controller::quit(0);
 
 std::mutex Controller::m;
-std::regex Controller::re = std::regex("GET /(d[-0-9.]*|QUIT)",std::regex::ECMAScript);
+std::regex Controller::re = std::regex("GET /([md][+-]?[0-9.]+|QUIT)",std::regex::ECMAScript);
 std::vector<int>Controller::clients = std::vector<int>();
 
 Controller::Controller(int port=3004){
